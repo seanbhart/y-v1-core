@@ -1,10 +1,10 @@
-image: "gitpod/workspace-node:latest"
+# image: "gitpod/workspace-node:latest"
 
-tasks:
-  - init: "pnpm install"
+# tasks:
+#   - init: "npm install"
 
-vscode:
-  extensions:
-    - "esbenp.prettier-vscode"
-    - "NomicFoundation.hardhat-solidity"
-    - "ritwickdey.LiveServer"
+# vscode:
+#   extensions:
+#     - "esbenp.prettier-vscode"
+#     - "NomicFoundation.hardhat-solidity"
+#     - "ritwickdey.LiveServer"

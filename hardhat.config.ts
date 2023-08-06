@@ -1,27 +1,34 @@
 import "@nomicfoundation/hardhat-toolbox";
 import { config as dotenvConfig } from "dotenv";
 import "hardhat-deploy";
+import "hardhat-gas-reporter";
 import type { HardhatUserConfig } from "hardhat/config";
-import type { NetworkUserConfig } from "hardhat/types";
 import { resolve } from "path";
 
-import "./tasks/accounts";
-import "./tasks/greet";
-import "./tasks/taskDeploy";
+// import type { NetworkUserConfig } from "hardhat/types";
+// import "./tasks/accounts";
+// import "./tasks/yo";
 
-const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || "./.env";
-dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
+dotenvConfig({ path: resolve(__dirname, ".env") });
+const devMode = process.env.DEV_MODE || true;
 
-// Ensure that we have all the environment variables we need.
-const mnemonic: string | undefined = process.env.MNEMONIC;
-if (!mnemonic) {
-  throw new Error("Please set your MNEMONIC in a .env file");
+let key = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
+const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
+if (devMode) {
+  console.log("devMode: ", devMode);
+  key = devKey;
 }
 
-const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
-if (!infuraApiKey) {
-  throw new Error("Please set your INFURA_API_KEY in a .env file");
-}
+// // Ensure that we have all the environment variables we need.
+// const mnemonic: string | undefined = process.env.MNEMONIC;
+// if (!mnemonic) {
+//   throw new Error("Please set your MNEMONIC in a .env file");
+// }
+
+// const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
+// if (!infuraApiKey) {
+//   throw new Error("Please set your INFURA_API_KEY in a .env file");
+// }
 
 const chainIds = {
   "arbitrum-mainnet": 42161,
@@ -36,28 +43,28 @@ const chainIds = {
   sepolia: 11155111,
 };
 
-function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
-  let jsonRpcUrl: string;
-  switch (chain) {
-    case "avalanche":
-      jsonRpcUrl = "https://api.avax.network/ext/bc/C/rpc";
-      break;
-    case "bsc":
-      jsonRpcUrl = "https://bsc-dataseed1.binance.org";
-      break;
-    default:
-      jsonRpcUrl = "https://" + chain + ".infura.io/v3/" + infuraApiKey;
-  }
-  return {
-    accounts: {
-      count: 10,
-      mnemonic,
-      path: "m/44'/60'/0'/0",
-    },
-    chainId: chainIds[chain],
-    url: jsonRpcUrl,
-  };
-}
+// function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
+//   let jsonRpcUrl: string;
+//   switch (chain) {
+//     case "avalanche":
+//       jsonRpcUrl = "https://api.avax.network/ext/bc/C/rpc";
+//       break;
+//     case "bsc":
+//       jsonRpcUrl = "https://bsc-dataseed1.binance.org";
+//       break;
+//     default:
+//       jsonRpcUrl = "https://" + chain + ".infura.io/v3/" + infuraApiKey;
+//   }
+//   return {
+//     accounts: {
+//       count: 10,
+//       // mnemonic,
+//       path: "m/44'/60'/0'/0",
+//     },
+//     chainId: chainIds[chain],
+//     url: jsonRpcUrl,
+//   };
+// }
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -77,33 +84,69 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
+    token: "MATIC",
     currency: "USD",
+    gasPrice: 50,
+    coinmarketcap: `${process.env.COIN_MARKET_CAP}`,
     enabled: process.env.REPORT_GAS ? true : false,
     excludeContracts: [],
     src: "./contracts",
   },
   networks: {
     hardhat: {
-      accounts: {
-        mnemonic,
-      },
+      accounts: [
+        {
+          privateKey: devKey,
+          balance: "10000000000000000000",
+        },
+      ],
       chainId: chainIds.hardhat,
-    },
-    ganache: {
-      accounts: {
-        mnemonic,
+      forking: {
+        url: `${process.env.NETWORK_FORK}`, //https://hardhat.org/hardhat-network/guides/mainnet-forking.html
+        // blockNumber: 15406716,
       },
-      chainId: chainIds.ganache,
-      url: "http://localhost:8545",
     },
-    arbitrum: getChainConfig("arbitrum-mainnet"),
-    avalanche: getChainConfig("avalanche"),
-    bsc: getChainConfig("bsc"),
-    mainnet: getChainConfig("mainnet"),
-    optimism: getChainConfig("optimism-mainnet"),
-    "polygon-mainnet": getChainConfig("polygon-mainnet"),
-    "polygon-mumbai": getChainConfig("polygon-mumbai"),
-    sepolia: getChainConfig("sepolia"),
+    local: {
+      url: `${process.env.NETWORK_LOCAL}`,
+      // chainId: 31337,
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_LOCAL}`],
+      forking: {
+        url: `${process.env.NETWORK_FORK}`,
+      },
+    },
+    kovan: {
+      url: `${process.env.NETWORK_KOVAN}`,
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_KOVAN}`],
+      // gas: 12000000,
+      // blockGasLimit: 0x1fffffffffffff,
+      // allowUnlimitedContractSize: true,
+      // timeout: 1800000,
+    },
+    polygon: {
+      url: `${process.env.NETWORK_POLYGON}`,
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_ACCT3}`],
+      gasPrice: 150000000000, // 150 Gwei
+    },
+    "zk-evm": {
+      url: "https://zkevm-rpc.com",
+      accounts: [key as string],
+      gasPrice: 2000000000, // 2 Gwei
+    },
+    zksync: {
+      url: "https://mainnet.era.zksync.io",
+      accounts: [key as string],
+      gasPrice: 1000000000, // 1 Gwei
+    },
+    "zora-goerli": {
+      url: "https://testnet.rpc.zora.energy/",
+      accounts: [key as string],
+    },
+    "zora-mainnet": {
+      url: "https://rpc.zora.energy/",
+      chainId: 7777777,
+      accounts: [key as string],
+      gasPrice: 2000000000, // 2 Gwei
+    },
   },
   paths: {
     artifacts: "./artifacts",
@@ -130,6 +173,8 @@ const config: HardhatUserConfig = {
   typechain: {
     outDir: "types",
     target: "ethers-v6",
+    // alwaysGenerateOverloads: false, // should overloads with full signatures like deposit(uint256) be generated always, even if there are no overloads?
+    // externalArtifacts: ["node_modules/@openzeppelin/**/*.json"], // allows you to manually specify the external artifacts that should be processed by the TypeChain (glob pattern)
   },
 };
 
