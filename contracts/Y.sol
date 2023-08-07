@@ -8,12 +8,10 @@ contract Y {
     // the owners that can modify the account
     address[] public owners;
 
-    // the me mapping stores the saved data from module
-    // activity. the address is the module address, the
-    // string is the data key, and the bytes is the data
-    // the rules around module names and data types are
-    // defined by the module itself
-    mapping(address => mapping(string => bytes)) public me;
+    // the me mapping stores the saved data from module activity.
+    // the address is the module address, the string is the data struct name,
+    // the uint256 is the timestamp, and the bytes is the data struct.
+    mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
 
     // TODO: rename modules to branches?
     // the modules in the order to display
@@ -33,15 +31,16 @@ contract Y {
     /**
      * @dev Executes a transaction from the Y contract
      * @param module The address of the module
-     * @param key The key of the data to be stored
+     * @param name The name of the struct format of the data
+     * @param timestamp The timestamp of the data
      * @param value The value of the data to be stored
      */
-    function setMe(address sender, address module, string memory key, bytes memory value) public {
+    function setMe(address sender, address module, string memory name, uint256 timestamp, bytes memory value) public {
         // only the module itself can set data for a module
         require(msg.sender == module, "only module can set module data");
         // only the owner can set data for the account
         require(isOwner(sender), "only owner can set account data");
-        me[module][key] = value;
+        me[module][name][timestamp] = value;
     }
 
     /**

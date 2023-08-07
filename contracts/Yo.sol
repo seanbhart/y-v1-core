@@ -39,7 +39,7 @@ import { Y } from "./Y.sol";
         // create the yeet
         Yeet memory yt = Yeet(timestamp, text);
         // store the yeet in the Y contract
-        yContract.setMe(account, address(this), Strings.toString(timestamp), abi.encode(yt));
+        yContract.setMe(account, address(this), "Yeet", timestamp, abi.encode(yt));
         // emit the YoYeet event
         emit YoYeet(account, timestamp, text);
     }
@@ -54,7 +54,7 @@ import { Y } from "./Y.sol";
         // get the Y contract
         Y yContract = Y(y);
         // get the yeet from the Y contract
-        Yeet memory yt = abi.decode(yContract.me(address(this), Strings.toString(timestamp)), (Yeet));
+        Yeet memory yt = abi.decode(yContract.me(address(this), "Yeet", timestamp), (Yeet));
         // return the text of the yeet
         return yt.text;
     }
