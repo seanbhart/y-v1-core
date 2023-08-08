@@ -29,13 +29,11 @@ import { Y } from "./Y.sol";
      * @param y The Y contract address
      * @param text The text of the Yo
      */
-    function yeet(address y, string memory text) public {
+    function yeet(address payable y, string memory text) public {
         Y yContract = Y(y);
-        // address account = msg.sender;
         string memory structName = "Yeet";
         uint256 timestamp = block.timestamp;
         Yeet memory yt = Yeet(timestamp, text);
-        // yContract.setMe(account, address(this), structName, timestamp, abi.encode(yt));
 
         // delegatecall the Y contract to pass the msg.sender as
         // owner of the Y contract (only owners are allowed to setMe)
@@ -49,7 +47,6 @@ import { Y } from "./Y.sol";
         (bool success,) = address(yContract).delegatecall(data);
         require(success, "delegatecall failed");
 
-        // emit YoYeet(account, timestamp, text);
         emit YoYeet(msg.sender, timestamp, text);
     }
 
@@ -59,7 +56,7 @@ import { Y } from "./Y.sol";
      * @param timestamp The timestamp of the yeet
      * @return The text of the Yo yeet
      */
-    function read(address y, uint256 timestamp) public view returns (string memory) {
+    function read(address payable y, uint256 timestamp) public view returns (string memory) {
         Y yContract = Y(y);
         Yeet memory yt = abi.decode(yContract.me(address(this), "Yeet", timestamp), (Yeet));
         return yt.text;

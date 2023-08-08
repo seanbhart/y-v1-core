@@ -21,9 +21,7 @@ contract Y {
     event ModuleRemoved(address indexed module);
     event ModuleInserted(address indexed module, uint256 index);
 
-    // // solhint-disable-next-line no-empty-blocks
-    // receive() external payable {}
-
+    receive() external payable {}
     constructor(address owner) {
         owners.push(owner);
     }
@@ -117,6 +115,17 @@ contract Y {
         require(_isOwner || msg.sender == address(this), "only owner");
     }
 
+    /**
+     * @dev Allows an owner to withdraw all Ether from the contract
+     */
+    function withdraw() public onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
+    /**
+     * @dev Checks if the passed address is an owner
+     * @param sender The address to check
+     */
     function isOwner(address sender) public view returns (bool) {
         for (uint i = 0; i < owners.length; i++) {
             if (sender == owners[i]) {

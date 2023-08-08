@@ -8,6 +8,7 @@ const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
 const devKey2 = process.env.ACCOUNT_KEY_PRIV_ACCT2;
 
 describe("Yo Contract", function () {
+  const provider = hhethers.provider;
   let yContract: Y;
   let yContractOtherConnected: Y;
   let yoContract: Yo;
@@ -17,7 +18,8 @@ describe("Yo Contract", function () {
   let devSigner: ethers.Signer;
 
   before(async function () {
-    const provider = new hhethers.JsonRpcProvider();
+    // const provider = new hhethers.JsonRpcProvider();
+    // provider = hhethers.provider;
     expect(devKey, "No dev key").to.exist;
 
     if (!devKey || !devKey2) {
@@ -27,7 +29,7 @@ describe("Yo Contract", function () {
     const wallet = new hhethers.Wallet(devKey, provider);
     expect(wallet, "No wallet").to.exist;
     ownerAddr = wallet.address;
-    ownerSigner = await hhethers.provider.getSigner(ownerAddr);
+    ownerSigner = await provider.getSigner(ownerAddr);
     console.log("ownerAddr", ownerAddr);
 
     // Create another wallet
@@ -35,7 +37,7 @@ describe("Yo Contract", function () {
     expect(devWallet, "No rdmDevWallet").to.exist;
     devAddr = devWallet.address;
     console.log("rdmAddr", devAddr);
-    devSigner = await hhethers.provider.getSigner(devAddr);
+    devSigner = await provider.getSigner(devAddr);
 
     yContract = await new Y__factory(ownerSigner).deploy(ownerAddr);
     console.log("Y contract target:", yContract.target);
@@ -44,6 +46,14 @@ describe("Yo Contract", function () {
 
     yoContract = await new Yo__factory(ownerSigner).deploy();
     console.log("Yo contract target:", yoContract.target);
+
+    // Send test ether to the contract to prep for the test
+    const tx = await wallet.sendTransaction({
+      to: yContract.target,
+      value: hhethers.parseEther("1.0"),
+    });
+    await tx.wait();
+    console.log("Sent 1.0 ETH to Yo contract");
   });
 
   describe("Deployment", function () {
@@ -80,6 +90,21 @@ describe("Yo Contract", function () {
       await yContract.setMe(structName, timestamp, yeetData);
       // expect the data to now be in the me hash table
       expect(await yContract.me(ownerAddr, structName, timestamp)).to.equal(yeetData);
+    });
+  });
+
+  describe("Ether", function () {
+    // the contract should have 1 ether in it
+    it("Should have 1 ether in the contract", async function () {
+      expect(await provider.getBalance(yContract.target)).to.equal(hhethers.parseEther("1.0"));
+    });
+
+    // withdraw should send the ether to the owner
+    it("Should withdraw ether to owner", async function () {
+      const ownerBalanceBefore = await provider.getBalance(ownerAddr);
+      await yContract.withdraw();
+      const ownerBalanceAfter = await provider.getBalance(ownerAddr);
+      expect(ownerBalanceAfter - ownerBalanceBefore).to.gt(hhethers.parseEther("0.99"));
     });
   });
 });

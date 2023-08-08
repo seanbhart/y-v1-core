@@ -32,7 +32,7 @@ contract YoSaved {
      * @param y The Y contract address
      * @param text The text of the Yo
      */
-    function yeet(address y, string memory text) public {
+    function yeet(address payable y, string memory text) public {
         Y yContract = Y(y);
         string memory structName = "Yeet";
         uint256 timestamp = block.timestamp;
@@ -60,7 +60,7 @@ contract YoSaved {
      * @param timestamp The timestamp of the yeet
      * @return The text of the Yo yeet
      */
-    function read(address y, uint256 timestamp) public view returns (string memory) {
+    function read(address payable y, uint256 timestamp) public view returns (string memory) {
         Y yContract = Y(y);
         Yeet memory yt = abi.decode(yContract.me(address(this), "Yeet", timestamp), (Yeet));
         return yt.text;
