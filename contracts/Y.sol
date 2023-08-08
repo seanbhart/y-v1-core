@@ -30,24 +30,21 @@ contract Y {
 
     /**
      * @dev Executes a transaction from the Y contract
-     * @param module The address of the module
-     * @param name The name of the struct format of the data
+     * @param structName The name of the struct format of the data
      * @param timestamp The timestamp of the data
      * @param value The value of the data to be stored
      */
-    function setMe(address sender, address module, string memory name, uint256 timestamp, bytes memory value) public {
-        // only the module itself can set data for a module
-        require(msg.sender == module, "only module can set module data");
-        // only the owner can set data for the account
-        require(isOwner(sender), "only owner can set account data");
-        me[module][name][timestamp] = value;
+    function setMe(string memory structName, uint256 timestamp, bytes memory value) public onlyOwner {
+        // the caller can only set its own data (and must be the owner of the Y contract)
+        // although the owner can delegatecall from a module to set the data for the module
+        me[tx.origin][structName][timestamp] = value;
     }
 
     /**
      * @dev Adds a new module to the modules array
      * @param module The address of the module to be added
      */
-    function addModule(address module) public onlyOwner {
+    function addModule(address module) public onlyOwner preventDelegateCall {
         modules.push(module);
         emit ModuleAdded(module);
     }
@@ -57,7 +54,7 @@ contract Y {
      * @param module The address of the module to be inserted
      * @param index The index at which the module should be inserted
      */
-    function insertModule(address module, uint256 index) public onlyOwner {
+    function insertModule(address module, uint256 index) public onlyOwner preventDelegateCall {
         // if the index is greater than the length of the array
         // then just push the module to the end
         if (index >= modules.length) {
@@ -71,7 +68,6 @@ contract Y {
             for (uint256 i = modules.length - 1; i > index; i--) {
                 modules[i] = modules[i - 1];
             }
-            // then we can set the module at the index
             modules[index] = module;
         }
 
@@ -82,9 +78,8 @@ contract Y {
      * @dev Removes a module from the modules array
      * @param module The address of the module to be removed
      */    
-    function removeModule(address module) public onlyOwner {
+    function removeModule(address module) public onlyOwner preventDelegateCall {
         for (uint256 i = 0; i < modules.length; i++) {
-            // find the module in the modules array
             if (modules[i] == module) {
                 // loop through the modules array again
                 // and shift all the modules after the index
@@ -92,7 +87,6 @@ contract Y {
                 for (uint256 j = i; j < modules.length - 1; j++) {
                     modules[j] = modules[j + 1];
                 }
-                // then we can pop the last element off the array
                 modules.pop();
                 break;
             }
@@ -130,5 +124,10 @@ contract Y {
             }
         }
         return false;
+    }
+
+    modifier preventDelegateCall() {
+        require(msg.sender == tx.origin, "delegatecall not allowed");
+        _;
     }
 }

@@ -33,21 +33,25 @@ contract YoSaved {
      * @param text The text of the Yo
      */
     function yeet(address y, string memory text) public {
-        // get the Y contract
         Y yContract = Y(y);
-        // get the account address
-        address account = msg.sender;
-        // get the timestamp
+        string memory structName = "Yeet";
         uint256 timestamp = block.timestamp;
-        // create the yeet
         Yeet memory yt = Yeet(timestamp, text);
-        // store the yeet in the Y contract
-        yContract.setMe(account, address(this), "Yeet", timestamp, abi.encode(yt));
-        // store the timestamp used and add the account to the list of accounts for the timestamp
-        timestamps.push(timestamp);
-        yeets[timestamp].push(account);
-        // emit the YoYeet event
-        emit YoYeet(account, timestamp, text);
+
+        // delegatecall the Y contract to pass the msg.sender as
+        // owner of the Y contract (only owners are allowed to setMe)
+        bytes4 functionSignature = bytes4(keccak256("setMe(string,uint256,bytes)"));
+        bytes memory data = abi.encodeWithSelector(
+            functionSignature,
+            structName,
+            timestamp,
+            abi.encode(yt)
+        );
+        (bool success,) = address(yContract).delegatecall(data);
+        require(success, "delegatecall failed");
+
+        // emit YoYeet(account, timestamp, text);
+        emit YoYeet(msg.sender, timestamp, text);
     }
 
     /**
@@ -57,15 +61,16 @@ contract YoSaved {
      * @return The text of the Yo yeet
      */
     function read(address y, uint256 timestamp) public view returns (string memory) {
-        // get the Y contract
         Y yContract = Y(y);
-        // get the yeet from the Y contract
         Yeet memory yt = abi.decode(yContract.me(address(this), "Yeet", timestamp), (Yeet));
-        // return the text of the yeet
         return yt.text;
     }
 
-    // Get a list of all addresses associated with a timestamp
+    /**
+     * @dev Returns a list of all addresses associated with a given timestamp
+     * @param timestamp The timestamp to retrieve addresses for
+     * @return An array of addresses associated with the given timestamp
+     */
     function getAddresses(uint256 timestamp) public view returns (address[] memory) {
         return yeets[timestamp];
     }

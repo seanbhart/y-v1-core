@@ -14,6 +14,7 @@ const devMode = process.env.DEV_MODE || true;
 
 let key = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
 const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
+const devKey2 = process.env.ACCOUNT_KEY_PRIV_ACCT2 || "";
 if (devMode) {
   console.log("devMode: ", devMode);
   key = devKey;
@@ -97,6 +98,10 @@ const config: HardhatUserConfig = {
       accounts: [
         {
           privateKey: devKey,
+          balance: "10000000000000000000",
+        },
+        {
+          privateKey: devKey2,
           balance: "10000000000000000000",
         },
       ],

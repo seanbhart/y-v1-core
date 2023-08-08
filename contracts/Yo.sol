@@ -30,18 +30,27 @@ import { Y } from "./Y.sol";
      * @param text The text of the Yo
      */
     function yeet(address y, string memory text) public {
-        // get the Y contract
         Y yContract = Y(y);
-        // get the account address
-        address account = msg.sender;
-        // get the timestamp
+        // address account = msg.sender;
+        string memory structName = "Yeet";
         uint256 timestamp = block.timestamp;
-        // create the yeet
         Yeet memory yt = Yeet(timestamp, text);
-        // store the yeet in the Y contract
-        yContract.setMe(account, address(this), "Yeet", timestamp, abi.encode(yt));
-        // emit the YoYeet event
-        emit YoYeet(account, timestamp, text);
+        // yContract.setMe(account, address(this), structName, timestamp, abi.encode(yt));
+
+        // delegatecall the Y contract to pass the msg.sender as
+        // owner of the Y contract (only owners are allowed to setMe)
+        bytes4 functionSignature = bytes4(keccak256("setMe(string,uint256,bytes)"));
+        bytes memory data = abi.encodeWithSelector(
+            functionSignature,
+            structName,
+            timestamp,
+            abi.encode(yt)
+        );
+        (bool success,) = address(yContract).delegatecall(data);
+        require(success, "delegatecall failed");
+
+        // emit YoYeet(account, timestamp, text);
+        emit YoYeet(msg.sender, timestamp, text);
     }
 
     /**
@@ -51,11 +60,8 @@ import { Y } from "./Y.sol";
      * @return The text of the Yo yeet
      */
     function read(address y, uint256 timestamp) public view returns (string memory) {
-        // get the Y contract
         Y yContract = Y(y);
-        // get the yeet from the Y contract
         Yeet memory yt = abi.decode(yContract.me(address(this), "Yeet", timestamp), (Yeet));
-        // return the text of the yeet
         return yt.text;
     }
 }
