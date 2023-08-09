@@ -13,16 +13,20 @@ import { Y } from "./Y.sol";
  * The Y contract is an account contract that serves as the identity of the user.
  */
  contract Yo {
+    // Required storage hash table in all Y-compatible modules
+    // DATA WILL NOT BE STORED HERE (ONLY IN THE Y CONTRACT)
+    mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
+    mapping(address => string) public meText;
+    uint256 public meCount;
+
     struct Yeet {
         uint256 timestamp;
         string text;
     }
 
-    // Required storage hash table in all Y-compatible modules
-    mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
-
     event YoYeet(address indexed account, uint256 indexed timestamp, string text);
     event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
+    event YeetedText(address indexed account, address indexed ref, string text);
     
     constructor() {
         console.log("Deploying a Yo contract");
@@ -36,6 +40,24 @@ import { Y } from "./Y.sol";
         return string(_data);
     }
 
+    function yeetInt(uint256 _int) public {
+        console.log("Yo int: ", _int);
+        meCount = _int;
+    }
+
+    function yeetText(address refAddress, string memory _text) public {
+        uint256 timestamp = block.timestamp;
+        console.log("Yo timestamp: ", timestamp);
+        console.log("Yo text: ", _text);
+        console.log("Yo refAddress: ", refAddress);
+
+        meText[refAddress] = _text;
+        console.log("Yo meText: ", string(meText[refAddress]));
+        emit YeetedText(msg.sender, refAddress, _text);
+    }
+
+    // Should be called by the Y contract via delegatecall so that the
+    // data is stored in the Y contract, associated with the user account
     function yeet(address refAddress, bytes memory _data) public payable returns (uint256) {
         uint256 timestamp = block.timestamp;
         string memory text = deserialize(_data);
@@ -50,8 +72,8 @@ import { Y } from "./Y.sol";
         return timestamp;
     }
 
-     /**
-     * @dev Allows a user to read a Yo from the blockchain
+    /**
+     * @dev Allows a user to read a Yo
      * @param y The Y contract address
      * @param timestamp The timestamp of the yeet
      * @return The text of the Yo yeet
@@ -60,59 +82,5 @@ import { Y } from "./Y.sol";
         Y yContract = Y(y);
         Yeet memory yt = abi.decode(yContract.me(address(this), "yeet", timestamp), (Yeet));
         return yt.text;
-    }
-
-    // function yeet(address payable _y, string memory _text) public payable {
-    //     (bool success, bytes memory data) = _y.delegatecall(
-    //         abi.encodeWithSignature("setMeSimple(string)", _text)
-    //     );
-    //     console.log("Yo setMeSimple success: ", success);
-    //     console.log("Yo setMeSimple data: ", string(data));
-    // }
-
-    /**
-     * @dev Allows a user to write a Yo to the blockchain
-     * @param _y The Y contract address
-     * @param _text The text of the Yo
-     */
-    function yeetOld(address payable _y, string memory _text) public {
-        // Y yContract = Y(y);
-        string memory structName = "Yeet";
-        uint256 timestamp = block.timestamp;
-        // Yeet memory yt = Yeet(timestamp, text);
-        console.log("Yo yt.structName: ", structName);
-        console.log("Yo yt.text: ", _text);
-
-        // yContract.setMe(structName, timestamp, abi.encode(yt));
-
-        // delegatecall the Y contract to pass the msg.sender as
-        // owner of the Y contract (only owners are allowed to setMe)
-        // string memory functionSignature = "setMe(string,uint256,string)";
-        // // bytes4 functionSignature = bytes4(keccak256("setMe(string,uint256,bytes)"));
-        // bytes memory data = abi.encodeWithSignature(
-        //     functionSignature,
-        //     structName,
-        //     timestamp,
-        //     _text
-        //     // bytes(_text)
-        //     // abi.encode(yt)
-        // );
-        // console.log("Yo address(yContract): ", address(yContract));
-        console.log("Yo _y: ", _y);
-        // console.log("Yo data: ", string(data));
-        (bool success, bytes memory responseData) = _y.delegatecall(abi.encodeWithSignature(
-            "setMe2(string)",
-            // structName,
-            // timestamp,
-            _text
-            // bytes(_text)
-            // abi.encode(yt)
-        ));
-        console.log("Yo yeet success: ", success);
-        console.log("Yo yeet responseData: ", string(responseData));
-        require(success, "delegatecall failed");
-
-
-        emit YoYeet(msg.sender, timestamp, _text);
     }
 }
