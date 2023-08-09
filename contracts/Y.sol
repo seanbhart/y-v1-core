@@ -31,17 +31,15 @@ contract Y {
     receive() external payable {}
 
     /**
-     * @dev The generalized delegatecall function for the Y contract that
-     * allows the owner to utilize any module in a standardized way
+     * @notice The generalized delegatecall function for the Y contract
+     * @dev Allows the owner to utilize any module in a standardized way
      * @param module The address of the module to delegate the call to
      * @param _data The data to be sent with the delegate call
      */    
-    function yeet(address module, bytes memory _data) public onlyOwner {
-        (bool success, bytes memory response) = module.delegatecall(
+    function yeet(address module, bytes memory _data) public onlyOwner returns (bool success, bytes memory response) {
+        (success, response) = module.delegatecall(
             abi.encodeWithSignature("yeet(address,bytes)", module, _data)
         );
-        console.log("Y yeet success: ", success);
-        console.log("Y yeet response: ", string(response));
     }
 
     /**
@@ -113,7 +111,6 @@ contract Y {
         //directly from an EOA owner, or through the account itself (which gets redirected through execute())
         bool _isOwner = false;
         for (uint i = 0; i < owners.length; i++) {
-            console.log("Y owner: ", owners[i]);
             if (msg.sender == owners[i]) {
                 _isOwner = true;
                 break;

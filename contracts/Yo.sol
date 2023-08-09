@@ -33,21 +33,21 @@ import { Y } from "./Y.sol";
     }
 
     function deserialize(bytes memory _data) public pure returns (string memory) {
+        // Yeet memory yt = abi.decode(_data, (Yeet));
         return string(_data);
     }
 
-    // Should be called by the Y contract via delegatecall so that the
-    // data is stored in the Y contract, associated with the user account
+    /**
+     * @notice Allows a user to write a Yo
+     * @dev This function should be called by the Y contract via delegatecall so that
+     * the data is stored in the Y contract, associated with the user account
+     * @param refAddress The address to reference
+     * @param _data The data to be stored
+     * @return The timestamp of the yeet
+     */
     function yeet(address refAddress, bytes memory _data) public payable returns (uint256) {
         uint256 timestamp = block.timestamp;
-        string memory text = deserialize(_data);
-        //check
-        console.log("Yo timestamp: ", timestamp);
-        console.log("Yo text: ", text);
-        console.log("Yo refAddress: ", refAddress);
-
         me[refAddress]["yeet"][timestamp] = _data;
-        console.log("Yo me: ", string(me[refAddress]["yeet"][timestamp]));
         emit Yeeted(msg.sender, refAddress, timestamp, _data);
         return timestamp;
     }
@@ -60,7 +60,6 @@ import { Y } from "./Y.sol";
      */
     function read(address payable y, uint256 timestamp) public view returns (string memory) {
         Y yContract = Y(y);
-        // Yeet memory yt = abi.decode(yContract.me(address(this), "yeet", timestamp), (Yeet));
         return deserialize(yContract.me(address(this), "yeet", timestamp));
     }
 }
