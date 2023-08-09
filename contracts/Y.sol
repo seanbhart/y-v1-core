@@ -8,8 +8,6 @@ contract Y {
     // the address is the module address, the string is the data struct name,
     // the uint256 is the timestamp, and the bytes is the data struct.
     mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
-    mapping(address => string) public meText;
-    uint256 public meCount;
 
     // the owners that can modify the account
     address[] public owners;
@@ -22,7 +20,6 @@ contract Y {
     event ModuleRemoved(address indexed module);
     event ModuleInserted(address indexed module, uint256 index);
     event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
-    event YeetedText(address indexed account, address indexed ref, string text);
 
     constructor(address owner) {
         owners.push(owner);
@@ -32,26 +29,6 @@ contract Y {
     // so that it can act as an account for the user
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
-
-    function yeetInt(address module, uint256 _int) public {
-        (bool success, bytes memory response) = module.delegatecall(
-            abi.encodeWithSignature("yeetInt(uint256)", _int)
-        );
-        console.log("Y yeetInt success: ", success);
-        console.log("Y yeetInt response: ", string(response));
-    }
-
-    function yeetText(address module, string memory _text) public onlyOwner {
-        (bool success, bytes memory response) = module.delegatecall(
-            abi.encodeWithSignature("yeetText(address,string)", module, _text)
-        );
-        console.log("Y yeetText success: ", success);
-        console.log("Y yeetText response: ", string(response));
-
-        // meText[module] = _text;
-        // console.log("Y meText: ", string(meText[module]));
-        // emit YeetedText(msg.sender, module, _text);
-    }
 
     /**
      * @dev The generalized delegatecall function for the Y contract that
@@ -65,17 +42,6 @@ contract Y {
         );
         console.log("Y yeet success: ", success);
         console.log("Y yeet response: ", string(response));
-    }
-
-    /**
-     * @dev Executes a transaction from the Y contract
-     * @param _text The value of the data to be stored
-     */
-    function setMeSimple(string memory _text) public onlyOwner {
-        // the caller can only set its own data (and must be the owner of the Y contract)
-        // although the owner can delegatecall from a module to set the data for the module
-        console.log("setMeSimple _text: ", _text);
-        meText[owners[0]] = _text;
     }
 
     /**

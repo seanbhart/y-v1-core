@@ -16,17 +16,13 @@ import { Y } from "./Y.sol";
     // Required storage hash table in all Y-compatible modules
     // DATA WILL NOT BE STORED HERE (ONLY IN THE Y CONTRACT)
     mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
-    mapping(address => string) public meText;
-    uint256 public meCount;
 
     struct Yeet {
         uint256 timestamp;
         string text;
     }
 
-    event YoYeet(address indexed account, uint256 indexed timestamp, string text);
     event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
-    event YeetedText(address indexed account, address indexed ref, string text);
     
     constructor() {
         console.log("Deploying a Yo contract");
@@ -38,22 +34,6 @@ import { Y } from "./Y.sol";
 
     function deserialize(bytes memory _data) public pure returns (string memory) {
         return string(_data);
-    }
-
-    function yeetInt(uint256 _int) public {
-        console.log("Yo int: ", _int);
-        meCount = _int;
-    }
-
-    function yeetText(address refAddress, string memory _text) public {
-        uint256 timestamp = block.timestamp;
-        console.log("Yo timestamp: ", timestamp);
-        console.log("Yo text: ", _text);
-        console.log("Yo refAddress: ", refAddress);
-
-        meText[refAddress] = _text;
-        console.log("Yo meText: ", string(meText[refAddress]));
-        emit YeetedText(msg.sender, refAddress, _text);
     }
 
     // Should be called by the Y contract via delegatecall so that the
@@ -80,7 +60,7 @@ import { Y } from "./Y.sol";
      */
     function read(address payable y, uint256 timestamp) public view returns (string memory) {
         Y yContract = Y(y);
-        Yeet memory yt = abi.decode(yContract.me(address(this), "yeet", timestamp), (Yeet));
-        return yt.text;
+        // Yeet memory yt = abi.decode(yContract.me(address(this), "yeet", timestamp), (Yeet));
+        return deserialize(yContract.me(address(this), "yeet", timestamp));
     }
 }
