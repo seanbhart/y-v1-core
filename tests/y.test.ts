@@ -18,14 +18,10 @@ describe("Yo Contract", function () {
   let devSigner: ethers.Signer;
 
   before(async function () {
-    // const provider = new hhethers.JsonRpcProvider();
-    // provider = hhethers.provider;
-    expect(devKey, "No dev key").to.exist;
-
+    // Create the owner wallet
     if (!devKey || !devKey2) {
       return;
     }
-    // Create the owner wallet
     const wallet = new hhethers.Wallet(devKey, provider);
     expect(wallet, "No wallet").to.exist;
     ownerAddr = wallet.address;
@@ -82,15 +78,15 @@ describe("Yo Contract", function () {
       await assert.isRejected(yContractOtherConnected.addModule(yoContract.target), /only owner/);
     });
 
-    it("Should setMe based on caller address", async function () {
-      const timestamp = Math.floor(Date.now() / 1000);
-      const structName = hhethers.encodeBytes32String("Yeet");
-      const text = hhethers.encodeBytes32String("hello there");
-      const yeetData = hhethers.AbiCoder.defaultAbiCoder().encode(["uint256", "string"], [timestamp, text]);
-      await yContract.setMe(structName, timestamp, yeetData);
-      // expect the data to now be in the me hash table
-      expect(await yContract.me(ownerAddr, structName, timestamp)).to.equal(yeetData);
-    });
+    // it("Should setMe based on caller address", async function () {
+    //   const timestamp = Math.floor(Date.now() / 1000);
+    //   const structName = hhethers.encodeBytes32String("Yeet");
+    //   const text = hhethers.encodeBytes32String("hello there");
+    //   const yeetData = hhethers.AbiCoder.defaultAbiCoder().encode(["uint256", "string"], [timestamp, text]);
+    //   await yContract.setMe(structName, timestamp, yeetData);
+    //   // expect the data to now be in the me hash table
+    //   expect(await yContract.me(ownerAddr, structName, timestamp)).to.equal(yeetData);
+    // });
   });
 
   describe("Ether", function () {

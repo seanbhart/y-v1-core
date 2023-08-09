@@ -1,65 +1,86 @@
 import { expect } from "chai";
-import { Signer } from "ethers";
-import { ethers } from "hardhat";
+import ethers from "ethers";
+import { ethers as hhethers } from "hardhat";
 
 import { Y, Y__factory, Yo, Yo__factory } from "../types";
 
 const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
 
 describe("Yo Contract", function () {
+  const provider = hhethers.provider;
   let yContract: Y;
   let yoContract: Yo;
   let ownerAddr: string;
-  let otherAddr: string;
-  let signer: Signer;
+  let ownerSigner: ethers.Signer;
 
   before(async function () {
-    const provider = new ethers.JsonRpcProvider();
-    expect(devKey, "No dev key").to.exist;
-
+    // Create the owner wallet
     if (!devKey) {
       return;
     }
-    // Create the owner wallet
-    const wallet = new ethers.Wallet(devKey, provider);
+    const wallet = new hhethers.Wallet(devKey, provider);
     expect(wallet, "No wallet").to.exist;
-    signer = await ethers.provider.getSigner(wallet.address);
     ownerAddr = wallet.address;
+    ownerSigner = await provider.getSigner(ownerAddr);
     console.log("ownerAddr", ownerAddr);
 
-    // Create another wallet
-    const wallet2 = ethers.Wallet.createRandom();
-    expect(wallet2, "No wallet2").to.exist;
-    otherAddr = wallet2.address;
-    console.log("otherAddr", otherAddr);
-
-    yContract = await new Y__factory(signer).deploy(ownerAddr);
-    yoContract = await new Yo__factory(signer).deploy();
+    yContract = await new Y__factory(ownerSigner).deploy(ownerAddr);
+    console.log("Y contract target:", yContract.target);
+    yoContract = await new Yo__factory(ownerSigner).deploy();
     console.log("Yo contract target:", yoContract.target);
   });
 
-  describe("Deployment", function () {
-    it("Should set the right owner", async function () {
-      expect(await yContract.isOwner(ownerAddr)).to.equal(true);
-    });
+  describe("Yeet", function () {
+    it("Should delegatecall yeet", async function () {
+      const text = "hello there";
+      // first format the data using the module
+      const data = await yoContract.serialize(text);
+      const tx = await yContract.yeet(yoContract.target, data);
+      await tx.wait();
+      // expect(0).to.equal(0);
 
-    it("Should not set non-owners as owner", async function () {
-      expect(await yContract.isOwner(otherAddr)).to.equal(false);
+      // The contract will emit an event when the yo is yeeted
+      // We can get the event logs with the `getFilter` method
+      const filter = yContract.filters.Yeeted(ownerAddr);
+      const logs = await yContract.queryFilter(filter);
+      console.log("logs", logs);
+      expect(logs.length).to.equal(1);
+
+      // deserialize the event data
+      const eventData = logs[0].args?.data;
+      const eventText = await yoContract.deserialize(eventData);
+      console.log("eventText", eventText);
+      const eventTimestamp = logs[0].args?.timestamp;
+      console.log("eventTimestamp", eventTimestamp);
+      expect(eventText).to.equal(text);
+
+      // check that the event data matches the stored data
+      // const refAddress = yoContract.target.toString().toLowerCase();
+      const refAddress = logs[0].args?.ref;
+      console.log("refAddress", refAddress);
+      expect(refAddress).to.equal(yoContract.target);
+      const ySavedData = await yContract.me(refAddress, "yeet", eventTimestamp);
+      console.log("yContract savedData", ySavedData);
+      const yoSavedData = await yoContract.me(refAddress, "yeet", eventTimestamp);
+      console.log("yoContract savedData", yoSavedData);
+      expect(yoSavedData).to.equal(eventData);
+
+      // expect(logs[0].args?.timestamp).to.equal(timestamp);
+      // const logText = logs[0].args?.text;
+      // const logTimestamp = logs[0].args?.timestamp;
+      // console.log("logText", logText);
+      // console.log("logTimestamp", logTimestamp);
+      // expect(logText).to.equal(text);
     });
   });
 
-  describe("Modules", function () {
-    it("Should allow owner to add a module", async function () {
-      await yContract.addModule(yoContract.target);
-      expect(await yContract.modules(0)).to.equal(yoContract.target);
-    });
-
-    it("Should emit event when module is added", async function () {
-      await expect(yContract.addModule(yoContract.target))
-        .to.emit(yContract, "ModuleAdded")
-        .withArgs(yoContract.target);
-    });
-
-    // TODO: test that non-owners cannot add modules
-  });
+  // describe("YeetOld", function () {
+  //   it("Should allow a user to write a Yo", async function () {
+  //     const text = "hello there";
+  //     await yoContract.yeet(yContract.target, text);
+  //     // const result = await yoContract.read(yContract.target, ethers.toBigInt(Date.now()));
+  //     // expect(result).to.equal(text);
+  //     expect(0).to.equal(0);
+  //   });
+  // });
 });

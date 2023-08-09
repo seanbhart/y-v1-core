@@ -106,10 +106,10 @@ const config: HardhatUserConfig = {
         },
       ],
       chainId: chainIds.hardhat,
-      forking: {
-        url: `${process.env.NETWORK_FORK}`, //https://hardhat.org/hardhat-network/guides/mainnet-forking.html
-        // blockNumber: 15406716,
-      },
+      // forking: {
+      //   url: `${process.env.NETWORK_FORK}`, //https://hardhat.org/hardhat-network/guides/mainnet-forking.html
+      //   // blockNumber: 15406716,
+      // },
     },
     local: {
       url: `${process.env.NETWORK_LOCAL}`,

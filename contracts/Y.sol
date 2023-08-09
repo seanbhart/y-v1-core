@@ -8,10 +8,15 @@ contract Y {
     // the owners that can modify the account
     address[] public owners;
 
+    // string public text;
+    // address public sender;
+    // uint public value;
+
     // the me mapping stores the saved data from module activity.
     // the address is the module address, the string is the data struct name,
     // the uint256 is the timestamp, and the bytes is the data struct.
     mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
+    mapping(address => string) public meText;
 
     // TODO: rename modules to branches?
     // the modules in the order to display
@@ -20,23 +25,46 @@ contract Y {
     event ModuleAdded(address indexed module);
     event ModuleRemoved(address indexed module);
     event ModuleInserted(address indexed module, uint256 index);
+    event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
 
     receive() external payable {}
     constructor(address owner) {
         owners.push(owner);
     }
 
-    /**
-     * @dev Executes a transaction from the Y contract
-     * @param structName The name of the struct format of the data
-     * @param timestamp The timestamp of the data
-     * @param value The value of the data to be stored
-     */
-    function setMe(string memory structName, uint256 timestamp, bytes memory value) public onlyOwner {
+    function yeet(address module, bytes memory _data) public onlyOwner {
+        (bool success, bytes memory response) = module.delegatecall(
+            abi.encodeWithSignature("yeet(address,bytes)", module, _data)
+        );
+        console.log("Y yeet success: ", success);
+        console.log("Y yeet response: ", string(response));
+    }
+
+    // function setVars(string memory _text) public payable {
+    //     text = _text;
+    //     sender = msg.sender;
+    //     value = msg.value;
+    // }
+
+    function setMeSimple(string memory _text) public onlyOwner {
         // the caller can only set its own data (and must be the owner of the Y contract)
         // although the owner can delegatecall from a module to set the data for the module
-        me[tx.origin][structName][timestamp] = value;
+        console.log("setMeSimple _text: ", _text);
+        meText[owners[0]] = _text;
     }
+
+    // /**
+    //  * @dev Executes a transaction from the Y contract
+    //  * @param structName The name of the struct format of the data
+    //  * @param timestamp The timestamp of the data
+    //  * @param _text The value of the data to be stored
+    //  */
+    // function setMe(string memory structName, uint256 timestamp, string memory _text) public onlyOwner {
+    //     // the caller can only set its own data (and must be the owner of the Y contract)
+    //     // although the owner can delegatecall from a module to set the data for the module
+    //     console.log("setMe _text: ", _text);
+    //     me[tx.origin][structName][timestamp] = _text;
+    // }
 
     /**
      * @dev Adds a new module to the modules array
@@ -107,6 +135,7 @@ contract Y {
         //directly from an EOA owner, or through the account itself (which gets redirected through execute())
         bool _isOwner = false;
         for (uint i = 0; i < owners.length; i++) {
+            console.log("Y owner: ", owners[i]);
             if (msg.sender == owners[i]) {
                 _isOwner = true;
                 break;
