@@ -2,13 +2,14 @@
 pragma solidity >=0.8.4;
 
 import { console } from "hardhat/console.sol";
-import { Yo } from "./Yo.sol";
+import { IYo } from "./interfaces/IYo.sol";
+import { IY } from "./interfaces/IY.sol";
 
 
-contract Y {
-    // the me mapping stores the saved data from module activity.
+contract Y is IY {
+    // the me mapping stores the saved data from module activity
     // the address is the module address, the string is the data struct name,
-    // the uint256 is the timestamp, and the bytes is the data struct.
+    // the uint256 is the timestamp, and the bytes is the data struct
     mapping(address => mapping(uint256 => bytes)) public me;
     // a list of all the timestamps for a user's yeets
     // the logic follows the me mapping - address is the module address
@@ -20,11 +21,6 @@ contract Y {
 
     // the owners that can modify the account
     address[] public owners;
-
-    event ModuleAdded(address indexed module);
-    event ModuleRemoved(address indexed module);
-    event ModuleInserted(address indexed module, uint256 index);
-    event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
 
     constructor(address owner) {
         owners.push(owner);
@@ -48,7 +44,7 @@ contract Y {
 
         // The module will have a "save" function that may or may not have
         // functionality - call it anyway and pass the data for use if needed
-        Yo(module).save(msg.sender, _data);
+        IYo(module).save(msg.sender, _data);
     }
 
     /**
@@ -114,6 +110,35 @@ contract Y {
         }
 
         emit ModuleRemoved(module);
+    }
+
+    /**
+     * @notice Returns the latest content from a module for a specific account
+     * @param module The address of the module to retrieve content from
+     * @param account The address of the account to retrieve content for
+     * @param earliest The earliest timestamp to retrieve content from
+     * @return The latest content for an account in html format
+     */
+    function wall(
+        address module,
+        address account,
+        uint256 earliest
+    ) public view returns (string memory) {
+        return IYo(module).wall(account, earliest);
+    }
+
+    /**
+     * @notice Returns the latest content from all modules for a specific account
+     * @param account The address of the account to retrieve content for
+     * @param earliest The earliest timestamp to retrieve content from
+     * @return The latest content for an account from all modules in html format
+     */
+    function walls(address account, uint256 earliest) public view returns (string memory) {
+        string memory html = "";
+        for (uint256 i = 0; i < modules.length; i++) {
+            html = string(abi.encodePacked(html, wall(modules[i], account, earliest)));
+        }
+        return html;
     }
 
 

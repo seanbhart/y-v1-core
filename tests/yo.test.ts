@@ -61,10 +61,10 @@ describe("Yo Contract", function () {
       expect(eventText.text).to.equal(text);
 
       // check that the event data matches the stored data
-      const refAddress = logs[0].args?.ref;
-      console.log("refAddress", refAddress);
-      expect(refAddress).to.equal(yoContract.target);
-      const ySavedData = await yContract.me(refAddress, eventTimestamp);
+      const ref = logs[0].args?.ref;
+      console.log("ref", ref);
+      expect(ref).to.equal(yoContract.target);
+      const ySavedData = await yContract.me(ref, eventTimestamp);
       const ySavedText = await yoContract.deserialize(ySavedData);
       console.log("yContract savedText", ySavedText.text);
       expect(ySavedText.text).to.equal(eventText.text);
@@ -105,14 +105,14 @@ describe("Yo Contract", function () {
       if (timestamps.length === 0) {
         return;
       }
-      const yeetHtml = await yoContract.getYeetHtml(ownerAddr, timestamps[0]);
+      const yeetHtml = await yoContract.html(ownerAddr, timestamps[0]);
       console.log("yeetHtml", yeetHtml);
       expect(yeetHtml).to.equal('<div class="yeet"><div class="yeet-text">hello there</div></div>');
     });
 
     it("should return recent feed in HTML format correctly", async () => {
       const earliestTimestamp = 0;
-      const htmlFeed = await yoContract.recentFeedHtml(earliestTimestamp);
+      const htmlFeed = await yoContract.feed(earliestTimestamp);
       console.log("htmlFeed", htmlFeed);
       // Assuming there are three yeets with text "hello there" in the feed
       expect(htmlFeed).to.equal(

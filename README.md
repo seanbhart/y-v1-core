@@ -1,4 +1,6 @@
-# Y World Computer Open Social Standard
+# Y - The Everything Protocol
+
+Y World Computer Open Social Standard
 
 ## Contract Structure
 

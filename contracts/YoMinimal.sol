@@ -63,15 +63,15 @@ import { Y } from "./Y.sol";
      * @notice Allows a user to write a Yo
      * @dev This function should be called by the Y contract via delegatecall so that
      * the data is stored in the Y contract, associated with the user account
-     * @param refAddress The address to reference
+     * @param ref The address to reference
      * @param _data The data to be stored
      * @return The timestamp of the yeet
      */
-    function yeet(address refAddress, bytes memory _data) public returns (uint256) {
+    function yeet(address ref, bytes memory _data) public returns (uint256) {
         uint256 timestamp = block.timestamp;
-        me[refAddress][timestamp] = _data;
-        yeetstamps[refAddress].push(timestamp);
-        emit Yeeted(msg.sender, refAddress, timestamp, _data);
+        me[ref][timestamp] = _data;
+        yeetstamps[ref].push(timestamp);
+        emit Yeeted(msg.sender, ref, timestamp, _data);
         return timestamp;
     }
 
