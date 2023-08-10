@@ -16,12 +16,20 @@ import { Y } from "./Y.sol";
  contract Yo {
     // -------------------------------------------------------------------------------- \\
     // ---------- REQUIRED - storage hash tables in all Y-compatible modules ---------- \\
+    
     // KEEP AT THE TOP OF THE MODULE
     // DO NOT CHANGE THE ORDER OF THESE VARIABLES
     // STORAGE SLOTS MUST MATCH THE Y CONTRACT
     // DATA WILL NOT BE STORED HERE (ONLY IN THE Y CONTRACT)
     mapping(address => mapping(uint256 => bytes)) public me;
     mapping(address => uint256[]) public yeetstamps;
+    
+    event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
+
+    struct Yeet {
+        string text;
+    }
+
     // --------------------------------- END REQUIRED ---------------------------------- \\
     // -------------------------------------------------------------------------------- \\
 
@@ -33,30 +41,14 @@ import { Y } from "./Y.sol";
     // a list of all the timestamps for all users' yeets
     uint256[] public timestamps;
 
-    struct Yeet {
-        string text;
-    }
-
-    event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
     event Saved(address indexed account, uint256 indexed timestamp, Yeet data);
-    
-    constructor() {
-        console.log("Deploying a Yo contract");
-    }
-
-    /**
-     * @notice Converts a string into a Yeet struct
-     * @dev This function is not mandatory, and is just a convenience
-     * function for this particular module
-     * @param _text The string to be converted
-     * @return _yeet The converted Yeet struct
-     */
-    function yeetize(string memory _text) public pure returns (Yeet memory _yeet) {
-        return Yeet(_text);
-    }
 
     // -------------------------------------------------------------------------------- \\
     // -------------------- REQUIRED functions for Y compatibility -------------------- \\
+
+    constructor() {
+        console.log("Deploying a Yo contract");
+    }
 
     /**
      * @notice Converts a string into a Yeet struct
@@ -99,13 +91,29 @@ import { Y } from "./Y.sol";
      * so that it can be aggregated by data type, rather than by user
      * @param account The address of the user
      * @param _data The data to be stored
+     * @return The data that was passed
      */
-    function save(address account, bytes memory _data) external {
+    function save(address account, bytes memory _data) external returns (address, bytes memory) {
         uint256 timestamp = block.timestamp;
         Yeet memory deserializedYeet = deserialize(_data);
         yeets[account][timestamp] = deserializedYeet;
         timestamps.push(timestamp);
         emit Saved(account, timestamp, deserializedYeet);
+        return (account, _data);
+    }
+
+    // -------------------------- END REQUIRED definitions ---------------------------- \\
+    // -------------------------------------------------------------------------------- \\
+
+    /**
+     * @notice Converts a string into a Yeet struct
+     * @dev This function is not mandatory, and is just a convenience
+     * function for this particular module
+     * @param _text The string to be converted
+     * @return _yeet The converted Yeet struct
+     */
+    function yeetize(string memory _text) public pure returns (Yeet memory _yeet) {
+        return Yeet(_text);
     }
 
     /**
@@ -135,9 +143,6 @@ import { Y } from "./Y.sol";
         Yeet memory yt = yeets[account][timestamp];
         return html(yt);
     }
-
-    // --------------------------------- END REQUIRED ---------------------------------- \\
-    // -------------------------------------------------------------------------------- \\
 
     function recentFeedHtml(uint256 earliestTimestamp) public view returns (string memory) {
         string memory htmlFeed = "";
