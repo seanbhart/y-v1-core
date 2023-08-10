@@ -29,6 +29,11 @@ contract Y is IY {
 // |------------------------ END REQUIRED storage ORDER --------------------------|
 // |------------------------------------------------------------------------------|
 
+// |------------------------------------------------------------------------------|
+// |------------- The following variables and functions are generally ------------|
+// |----------------- needed to be compatible with most modules ------------------|
+// |                                                                              |
+
     // TODO: rename modules to branches?
     // the modules in the order to display
     address[] public modules;
