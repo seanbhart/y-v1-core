@@ -7,13 +7,27 @@ import { IY } from "./interfaces/IY.sol";
 
 
 contract Y is IY {
-    // the me mapping stores the saved data from module activity
-    // the address is the module address, the string is the data struct name,
+
+// |------------------------------------------------------------------------------|
+// |--------------------------- REQUIRED storage ORDER ---------------------------|
+// |                                                                              |
+    
+    // KEEP AT THE TOP OF THE Y ACCOUNT CONTRACT
+    // DO NOT CHANGE THE ORDER OF THESE VARIABLES
+    // OTHERWISE MODULE STORAGE SLOTS WILL NOT MATCH
+    // Module: e.g. Yo Contract
+
+    // the "me" mapping stores the saved data from module activity
+    // the address is the MODULE address, the string is the data struct name,
     // the uint256 is the timestamp, and the bytes is the data struct
     mapping(address => mapping(uint256 => bytes)) public me;
     // a list of all the timestamps for a user's yeets
-    // the logic follows the me mapping - address is the module address
+    // the logic follows the "me" mapping - address is the MODULE address
     mapping(address => uint256[]) public yeetstamps;
+
+// |                                                                              |
+// |------------------------ END REQUIRED storage ORDER --------------------------|
+// |------------------------------------------------------------------------------|
 
     // TODO: rename modules to branches?
     // the modules in the order to display
