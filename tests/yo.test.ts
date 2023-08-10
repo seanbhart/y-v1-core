@@ -64,7 +64,7 @@ describe("Yo Contract", function () {
       const refAddress = logs[0].args?.ref;
       console.log("refAddress", refAddress);
       expect(refAddress).to.equal(yoContract.target);
-      const ySavedData = await yContract.me(refAddress, "yeet", eventTimestamp);
+      const ySavedData = await yContract.me(refAddress, eventTimestamp);
       const ySavedText = await yoContract.deserialize(ySavedData);
       console.log("yContract savedText", ySavedText.text);
       expect(ySavedText.text).to.equal(eventText.text);

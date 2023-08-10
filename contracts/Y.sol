@@ -9,7 +9,7 @@ contract Y {
     // the me mapping stores the saved data from module activity.
     // the address is the module address, the string is the data struct name,
     // the uint256 is the timestamp, and the bytes is the data struct.
-    mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
+    mapping(address => mapping(uint256 => bytes)) public me;
     // a list of all the timestamps for a user's yeets
     // the logic follows the me mapping - address is the module address
     mapping(address => uint256[]) public yeetstamps;
@@ -46,24 +46,9 @@ contract Y {
             abi.encodeWithSignature("yeet(address,bytes)", module, _data)
         );
 
-        // The module will have a "youse" function that may or may not have
+        // The module will have a "save" function that may or may not have
         // functionality - call it anyway and pass the data for use if needed
-        Yo(module).youse(msg.sender, _data);
-
-        // // Check if the "youse" function exists on the module contract before calling it
-        // // bytes memory youseFunctionSignature = abi.encodeWithSignature("youse(address,bytes)");
-        // // bool functionExists = module.call(bytes4(keccak256("youse(address,bytes)")));
-        // (bool functionExists,) = module.staticcall(abi.encodeWithSignature("youse(address,bytes)"));
-        // console.log("functionExists: ", functionExists);
-        // if (functionExists) {
-        //     // Send the account address that should be associated
-        //     // with the data that will be stored in the module
-        //     (success, response) = module.call(
-        //         abi.encodeWithSignature("youse(address,bytes)", msg.sender, _data)
-        //     );
-        //     console.log("success: ", success);
-        //     console.log("response: ", string(response));
-        // }
+        Yo(module).save(msg.sender, _data);
     }
 
     /**
