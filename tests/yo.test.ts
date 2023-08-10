@@ -77,9 +77,9 @@ describe("Yo Contract", function () {
       expect(yeetstampCount2).to.equal(yeetstampCount + 1);
 
       // check that the yeet for this account has been saved
-      const yeets = await yoContract.yeets(ownerAddr, eventTimestamp);
-      console.log("yeets", yeets);
-      expect(yeets.length).to.be.greaterThan(0);
+      const yeet = await yoContract.getYeet(ownerAddr, eventTimestamp);
+      console.log("yeet", yeet);
+      expect(yeet.text).to.not.be.undefined;
 
       // check that the timestamp is in the list of timestamps
       const timestamps = await yoContract.getTimestamps();
@@ -89,6 +89,35 @@ describe("Yo Contract", function () {
       // read the Y contract data from the Yo contract
       const result = await yoContract.read(yContract.target, eventTimestamp);
       expect(result.text).to.equal(eventText.text);
+    });
+  });
+
+  describe("Yeet HTML", function () {
+    beforeEach(async () => {
+      const text = "hello there";
+      const data = await yoContract.serialize(text);
+      const tx = await yContract.yeet(yoContract.target, data);
+      await tx.wait();
+    });
+
+    it("should convert a Yeet struct to HTML string correctly", async () => {
+      const timestamps = await yoContract.getTimestamps();
+      if (timestamps.length === 0) {
+        return;
+      }
+      const yeetHtml = await yoContract.getYeetHtml(ownerAddr, timestamps[0]);
+      console.log("yeetHtml", yeetHtml);
+      expect(yeetHtml).to.equal('<div class="yeet"><div class="yeet-text">hello there</div></div>');
+    });
+
+    it("should return recent feed in HTML format correctly", async () => {
+      const earliestTimestamp = 0;
+      const htmlFeed = await yoContract.recentFeedHtml(earliestTimestamp);
+      console.log("htmlFeed", htmlFeed);
+      // Assuming there are three yeets with text "hello there" in the feed
+      expect(htmlFeed).to.equal(
+        '<div class="yeet-feed"><div class="yeet"><div class="yeet-text">hello there</div></div><div class="yeet"><div class="yeet-text">hello there</div></div><div class="yeet"><div class="yeet-text">hello there</div></div></div>',
+      );
     });
   });
 });

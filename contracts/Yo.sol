@@ -108,8 +108,60 @@ import { Y } from "./Y.sol";
         emit Saved(account, timestamp, deserializedYeet);
     }
 
+    /**
+     * @notice Converts a Yeet struct into a HTML string
+     * @dev This allows the Yo contract to display the data in HTML format
+     * in an easily embeddable way so that it can be displayed on a website
+     * @param yt The Yeet struct to be converted
+     * @return The HTML string representation of the Yeet struct
+     */
+    function html(Yeet memory yt) internal pure returns (string memory) {
+        return string(abi.encodePacked(
+            "<div class=\"yeet\">",
+                "<div class=\"yeet-text\">",
+                    yt.text,
+                "</div>",
+            "</div>"
+        ));
+    }
+
+    /**
+     * @notice Returns potential HTML for a yeet
+     * @param account The address of the user
+     * @param timestamp The timestamp of the yeet
+     * @return The string HTML of the yeet
+     */
+    function getYeetHtml(address account, uint256 timestamp) public view returns (string memory) {
+        Yeet memory yt = yeets[account][timestamp];
+        return html(yt);
+    }
+
     // --------------------------------- END REQUIRED ---------------------------------- \\
     // -------------------------------------------------------------------------------- \\
+
+    function recentFeedHtml(uint256 earliestTimestamp) public view returns (string memory) {
+        string memory htmlFeed = "";
+        for (uint256 i = timestamps.length; i > 0; i--) {
+            uint256 timestamp = timestamps[i-1];
+            if (timestamp < earliestTimestamp) {
+                break;
+            }
+            Yeet memory yt = yeets[msg.sender][timestamp];
+            htmlFeed = string(abi.encodePacked(htmlFeed, html(yt)));
+        }
+        htmlFeed = string(abi.encodePacked("<div class=\"yeet-feed\">", htmlFeed, "</div>"));
+        return htmlFeed;
+    }
+
+    /**
+     * @dev Returns the Yeet struct for a given user and timestamp
+     * @param account The address of the user
+     * @param timestamp The timestamp of the yeet
+     * @return The Yeet struct
+     */
+    function getYeet(address account, uint256 timestamp) public view returns (Yeet memory) {
+        return yeets[account][timestamp];
+    }
 
     /**
      * @dev Returns the timestamps of all the Yo yeets
