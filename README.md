@@ -9,7 +9,7 @@ Yeets are social actions. All actions are Yeets.
 Yeets always save data to Y contracts (accounts). Normal Yeeting uses a "yeet" function. Yo contracts must also have a
 "save" function that will be called by the Y contract to allow the Yo module to save data internally if needed.
 
-### Y Social Components
+### Y Social Component Ideas
 
 - **Y.sol** / **Yme.sol** - A generalized account contract
 - **Yo.sol** - A generalized short-form text yeet contract

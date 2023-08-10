@@ -35,20 +35,21 @@ interface IY {
     function removeModule(address module) external;
 
     /**
-     * @notice Returns the latest content from a module for a specific account
+     * @notice Returns the latest content in html format from a module for a specific account
      * @param module The address of the module to retrieve content from
-     * @param account The address of the account to retrieve content for
      * @param earliest The earliest timestamp to retrieve content from
      * @return The latest content for an account in html format
      */
-    function wall(address module, address account, uint256 earliest) external view returns (string memory);
+    function wall(
+        address module,
+        uint256 earliest
+    ) external view returns (string memory);
 
     /**
      * @notice Returns the latest content from all modules for a specific account
-     * @param account The address of the account to retrieve content for
      * @param earliest The earliest timestamp to retrieve content from
      * @return The latest content for an account from all modules in html format
      */
-    function walls(address account, uint256 earliest) external view returns (string memory);
+    function walls(uint256 earliest) external view returns (string memory);
 
 }

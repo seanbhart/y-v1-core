@@ -85,9 +85,9 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    token: "MATIC",
+    token: "ETH",
     currency: "USD",
-    gasPrice: 50,
+    gasPrice: 1, // 1 Gwei is the lowest possible setting - L2s are lower in reality
     coinmarketcap: `${process.env.COIN_MARKET_CAP}`,
     enabled: process.env.REPORT_GAS ? true : false,
     excludeContracts: [],

@@ -44,17 +44,30 @@ contract Y is IY {
 
         // The module will have a "save" function that may or may not have
         // functionality - call it anyway and pass the data for use if needed
-        IYo(module).save(msg.sender, _data);
+        IYo(module).save(response);
     }
 
     /**
-     * @notice Returns the yeetstamps for a given account
-     * @dev Retrieves the array of yeetstamps associated with the account address
-     * @param account The address of the account to retrieve yeetstamps for
-     * @return An array of yeetstamp timestamps
+     * @notice Returns the yeetstamps (timestamps) for a given module for this account
+     * @dev Retrieves the array of timestamps for an account and module combination
+     * @param module The address of the module
+     * @return An array of timestamps
      */
-    function getYeetstamps(address account) public view returns (uint256[] memory) {
-        return yeetstamps[account];
+    function getYeetstamps(address module) public view returns (uint256[] memory) {
+        return yeetstamps[module];
+    }
+
+    /**
+     * MODULES
+    */
+
+    /**
+     * @notice Returns the list of modules
+     * @dev Retrieves the array of added modules for this account
+     * @return An array of module addresses
+     */
+    function getModules() public view returns (address[] memory) {
+        return modules;
     }
 
     /**
@@ -62,6 +75,12 @@ contract Y is IY {
      * @param module The address of the module to be added
      */
     function addModule(address module) public onlyOwner preventDelegateCall {
+        // abort if module is already in the array
+        for (uint256 i = 0; i < modules.length; i++) {
+            if (modules[i] == module) {
+                return;
+            }
+        }
         modules.push(module);
         emit ModuleAdded(module);
     }
@@ -113,30 +132,56 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the latest content from a module for a specific account
+     * HTML GENERATORS
+    */
+
+    /**
+     * @notice Returns the latest content in html format from a module for a specific account
      * @param module The address of the module to retrieve content from
-     * @param account The address of the account to retrieve content for
      * @param earliest The earliest timestamp to retrieve content from
      * @return The latest content for an account in html format
      */
     function wall(
         address module,
-        address account,
         uint256 earliest
     ) public view returns (string memory) {
-        return IYo(module).wall(account, earliest);
+        // Get all the timestamps for the account for this module
+        uint256[] memory timestamps = getYeetstamps(module);
+        if (timestamps.length == 0) {
+            return "no content";
+        }
+
+        // filter out the timestamps that are earlier than the earliest
+        // this is done by creating a new array and pushing the timestamps
+        // that are later than the earliest
+        uint256[] memory _latestTimestamps = new uint256[](timestamps.length);
+        uint256 count = 0;
+        for (uint256 i = 0; i < timestamps.length; i++) {
+            if (timestamps[i] >= earliest) {
+                _latestTimestamps[count] = timestamps[i];
+                count++;
+            }
+        }
+
+        // The appropriate Yeets will be in the me hash table,
+        // accessible via the module and timestamp - they will
+        // be serialized structs and can be decoded via the module
+        bytes[] memory _yts = new bytes[](_latestTimestamps.length);
+        for (uint256 i = 0; i < _latestTimestamps.length; i++) {
+            _yts[i] = me[module][_latestTimestamps[i]];
+        }
+        return IYo(module).feed(_yts);
     }
 
     /**
      * @notice Returns the latest content from all modules for a specific account
-     * @param account The address of the account to retrieve content for
      * @param earliest The earliest timestamp to retrieve content from
      * @return The latest content for an account from all modules in html format
      */
-    function walls(address account, uint256 earliest) public view returns (string memory) {
+    function walls(uint256 earliest) public view returns (string memory) {
         string memory html = "";
         for (uint256 i = 0; i < modules.length; i++) {
-            html = string(abi.encodePacked(html, wall(modules[i], account, earliest)));
+            html = string(abi.encodePacked(html, wall(modules[i], earliest)));
         }
         return html;
     }

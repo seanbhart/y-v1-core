@@ -47,7 +47,7 @@ describe("Yo Contract", function () {
 
       // The contract will emit an event when the yo is yeeted
       // We can get the event logs with the `getFilter` method
-      const filter = yContract.filters.Yeeted(ownerAddr);
+      const filter = yContract.filters.Yeeted(yContract.target);
       const logs = await yContract.queryFilter(filter);
       // console.log("logs", logs);
       expect(logs.length).to.equal(1);
@@ -65,9 +65,14 @@ describe("Yo Contract", function () {
       console.log("ref", ref);
       expect(ref).to.equal(yoContract.target);
       const ySavedData = await yContract.me(ref, eventTimestamp);
-      const ySavedText = await yoContract.deserialize(ySavedData);
-      console.log("yContract savedText", ySavedText.text);
-      expect(ySavedText.text).to.equal(eventText.text);
+      const ySavedYeet = await yoContract.deserialize(ySavedData);
+      console.log(
+        "yContract ySavedYeet account, timestamp, text",
+        ySavedYeet.account,
+        ySavedYeet.timestamp,
+        ySavedYeet.text,
+      );
+      expect(ySavedYeet.text).to.equal(eventText.text);
 
       // check that the yeetstamp count has increased
       const yeetstamps2 = await yContract.getYeetstamps(yoContract.target.toString());
@@ -77,7 +82,7 @@ describe("Yo Contract", function () {
       expect(yeetstampCount2).to.equal(yeetstampCount + 1);
 
       // check that the yeet for this account has been saved
-      const yeet = await yoContract.getYeet(ownerAddr, eventTimestamp);
+      const yeet = await yoContract.getYeet(yContract.target, eventTimestamp);
       console.log("yeet", yeet);
       expect(yeet.text).to.not.be.undefined;
 
@@ -105,14 +110,14 @@ describe("Yo Contract", function () {
       if (timestamps.length === 0) {
         return;
       }
-      const yeetHtml = await yoContract.html(ownerAddr, timestamps[0]);
+      const yeetHtml = await yoContract.getHtml(yContract.target, timestamps[0]);
       console.log("yeetHtml", yeetHtml);
       expect(yeetHtml).to.equal('<div class="yeet"><div class="yeet-text">hello there</div></div>');
     });
 
     it("should return recent feed in HTML format correctly", async () => {
       const earliestTimestamp = 0;
-      const htmlFeed = await yoContract.feed(earliestTimestamp);
+      const htmlFeed = await yoContract.home(earliestTimestamp);
       console.log("htmlFeed", htmlFeed);
       // Assuming there are three yeets with text "hello there" in the feed
       expect(htmlFeed).to.equal(

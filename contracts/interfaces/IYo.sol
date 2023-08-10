@@ -28,43 +28,57 @@ interface IYo {
     function deserialize(bytes memory _data) external pure returns (Yeet memory);
 
     /**
-     * @notice Yeets (posts) data to the contract
-     * @param ref The reference address to associate with the yeet. The reference
-     * will be used as a contract that contains the rules of data storage and retrieval
-     * @param _data The data to yeet
-     * @return The timestamp of the yeet
+     * @notice Allows a user to write a Yo
+     * @dev This function should be called by the Y contract via delegatecall so that
+     * the data is stored in the Y contract, associated with the user account
+     * @param ref The address to reference
+     * @param _data The data to be stored
+     * @return The updated bytes of the Yeet struct
      */
-    function yeet(address ref, bytes memory _data) external returns (uint256);
+    function yeet(address ref, bytes memory _data) external returns (Yeet memory);
 
     /**
-     * @notice Saves data to the contract
-     * @param account The account address to associate with the data
-     * @param _data The data to save
-     * @return The account address and the saved data
+     * @notice Should be called by the Y contract to save data in the Yo contract
+     * @dev This function allows the Yo contract to store data in its own storage
+     * so that it can be aggregated by data type, rather than by user
+     * @param _data The data to be stored
+     * @return The data that was passed
      */
-    function save(address account, bytes memory _data) external returns (address, bytes memory);
+    function save(bytes memory _data) external returns (bytes memory);
 
     /**
-     * @notice Returns the HTML representation of a user's yeets
-     * @param account The address of the user
-     * @param timestamp The timestamp of the yeet to retrieve
-     * @return The HTML string representation of the yeet
+     * @notice Converts a serialized Yeet into a HTML string
+     * @dev This allows the Yo contract to display the data in HTML format
+     * in an easily embeddable way so that it can be displayed on a website
+     * @param _yt The serialized Yeet (bytes) to be converted
+     * @return The HTML string representation of the Yeet struct
      */
-    function html(address account, uint256 timestamp) external view returns (string memory);
+    function html(bytes memory _yt) external pure returns (string memory);
 
     /**
-     * @notice Returns the HTML representation of a user's yeets
-     * @param account The address of the user
-     * @param earliest The earliest timestamp to consider for the yeets
+     * @notice Returns the HTML representation of a list of yeets
+     * @param _yts The list of serialized yeets (bytes) to be converted
      * @return The HTML string representation of the yeets
      */
-    function wall(address account, uint256 earliest) external view returns (string memory);
+    function feed(bytes[] memory _yts) external view returns (string memory);
+
+
+    /**
+     * OPTIONAL FUNCTIONS
+     */
+
+    /**
+     * @notice Returns the most recent yeets
+     * @param earliest The earliest timestamp to consider for the yeets
+     * @return The list of yeets
+     */
+    function latest(uint256 earliest) external view returns (Yeet[] memory);
 
     /**
      * @notice Returns the HTML representation of the most recent yeets
      * @param earliest The earliest timestamp to consider for the yeets
      * @return The HTML string representation of the yeets
      */
-    function feed(uint256 earliest) external view returns (string memory);
+    function home(uint256 earliest) external view returns (string memory);
 
 }
