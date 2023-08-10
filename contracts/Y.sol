@@ -2,12 +2,17 @@
 pragma solidity >=0.8.4;
 
 import { console } from "hardhat/console.sol";
+import { Yo } from "./Yo.sol";
+
 
 contract Y {
     // the me mapping stores the saved data from module activity.
     // the address is the module address, the string is the data struct name,
     // the uint256 is the timestamp, and the bytes is the data struct.
     mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
+    // a list of all the timestamps for a user's yeets
+    // the logic follows the me mapping - address is the module address
+    mapping(address => uint256[]) public yeetstamps;
 
     // TODO: rename modules to branches?
     // the modules in the order to display
@@ -41,16 +46,34 @@ contract Y {
             abi.encodeWithSignature("yeet(address,bytes)", module, _data)
         );
 
-        // Check if the "youse" function exists on the module contract before calling it
-        bytes memory youseFunctionSignature = abi.encodeWithSignature("youse()");
-        (bool functionExists,) = module.staticcall(youseFunctionSignature);
-        if (functionExists) {
-            // Send the account address that should be associated
-            // with the data that will be stored in the module
-            (success, response) = module.call(
-                abi.encodeWithSignature("youse(address,bytes)", msg.sender, _data)
-            );
-        }
+        // The module will have a "youse" function that may or may not have
+        // functionality - call it anyway and pass the data for use if needed
+        Yo(module).youse(msg.sender, _data);
+
+        // // Check if the "youse" function exists on the module contract before calling it
+        // // bytes memory youseFunctionSignature = abi.encodeWithSignature("youse(address,bytes)");
+        // // bool functionExists = module.call(bytes4(keccak256("youse(address,bytes)")));
+        // (bool functionExists,) = module.staticcall(abi.encodeWithSignature("youse(address,bytes)"));
+        // console.log("functionExists: ", functionExists);
+        // if (functionExists) {
+        //     // Send the account address that should be associated
+        //     // with the data that will be stored in the module
+        //     (success, response) = module.call(
+        //         abi.encodeWithSignature("youse(address,bytes)", msg.sender, _data)
+        //     );
+        //     console.log("success: ", success);
+        //     console.log("response: ", string(response));
+        // }
+    }
+
+    /**
+     * @notice Returns the yeetstamps for a given account
+     * @dev Retrieves the array of yeetstamps associated with the account address
+     * @param account The address of the account to retrieve yeetstamps for
+     * @return An array of yeetstamp timestamps
+     */
+    function getYeetstamps(address account) public view returns (uint256[] memory) {
+        return yeetstamps[account];
     }
 
     /**

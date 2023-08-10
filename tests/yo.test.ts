@@ -32,6 +32,12 @@ describe("Yo Contract", function () {
 
   describe("Yeet", function () {
     it("Should delegatecall yeet", async function () {
+      // count the number of yeetstamps before the yeet
+      const yeetstamps = await yContract.getYeetstamps(yoContract.target.toString());
+      console.log("yeetstamps", yeetstamps);
+      const yeetstampCount = yeetstamps.length;
+      console.log("yeetstampCount", yeetstampCount);
+
       const text = "hello there";
       // first format the data using the module
       // const yeet = await yoContract.yeetize(text);
@@ -62,6 +68,23 @@ describe("Yo Contract", function () {
       const ySavedText = await yoContract.deserialize(ySavedData);
       console.log("yContract savedText", ySavedText.text);
       expect(ySavedText.text).to.equal(eventText.text);
+
+      // check that the yeetstamp count has increased
+      const yeetstamps2 = await yContract.getYeetstamps(yoContract.target.toString());
+      console.log("yeetstamps2", yeetstamps2);
+      const yeetstampCount2 = yeetstamps2.length;
+      console.log("yeetstampCount2", yeetstampCount2);
+      expect(yeetstampCount2).to.equal(yeetstampCount + 1);
+
+      // check that the yeet for this account has been saved
+      const yeets = await yoContract.yeets(ownerAddr, eventTimestamp);
+      console.log("yeets", yeets);
+      expect(yeets.length).to.be.greaterThan(0);
+
+      // check that the timestamp is in the list of timestamps
+      const timestamps = await yoContract.getTimestamps();
+      console.log("timestamps", timestamps);
+      expect(timestamps).to.include(eventTimestamp);
 
       // read the Y contract data from the Yo contract
       const result = await yoContract.read(yContract.target, eventTimestamp);

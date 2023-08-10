@@ -13,15 +13,22 @@ import { Y } from "./Y.sol";
  * The Y contract is an account contract that serves as the identity of the user.
  */
  contract Yo {
-    // Required storage hash table in all Y-compatible modules
+    // ---------- REQUIRED - storage hash tables in all Y-compatible modules ---------- \\
+    // KEEP AT THE TOP OF THE MODULE
+    // DO NOT CHANGE THE ORDER OF THESE VARIABLES
+    // STORAGE SLOTS MUST MATCH THE Y CONTRACT
     // DATA WILL NOT BE STORED HERE (ONLY IN THE Y CONTRACT)
     mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
+    mapping(address => uint256[]) public yeetstamps;
+    // --------------------------------- END REQUIRED ---------------------------------- \\
 
     // Optional storage hash table used to store data in the Yo contract
     // for data aggregation by data type, rather than by user (in the Y contract)
     // The first address is the user address, the second uint256 is the timestamp,
     // and the data is in the format of the data type
     mapping(address => mapping(uint256 => Yeet)) public yeets;
+    // a list of all the timestamps for all users' yeets
+    uint256[] public timestamps;
 
     struct Yeet {
         string text;
@@ -58,15 +65,26 @@ import { Y } from "./Y.sol";
     function yeet(address refAddress, bytes memory _data) public returns (uint256) {
         uint256 timestamp = block.timestamp;
         me[refAddress]["yeet"][timestamp] = _data;
+        yeetstamps[refAddress].push(timestamp);
         emit Yeeted(msg.sender, refAddress, timestamp, _data);
         return timestamp;
     }
 
-    function youse(address account, bytes memory _data) public {
+    function youse(address account, bytes memory _data) external {
+        console.log("youse account: ", account);
         uint256 timestamp = block.timestamp;
         Yeet memory deserializedYeet = deserialize(_data);
         yeets[account][timestamp] = deserializedYeet;
+        timestamps.push(timestamp);
         emit Yoused(account, timestamp, deserializedYeet);
+    }
+
+    /**
+     * @dev Returns the timestamps of all the Yo yeets
+     * @return The list of timestamps
+     */
+    function getTimestamps() public view returns (uint256[] memory) {
+        return timestamps;
     }
 
     /**
