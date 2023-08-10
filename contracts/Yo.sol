@@ -24,7 +24,6 @@ import { Y } from "./Y.sol";
     mapping(address => mapping(uint256 => Yeet)) public yeets;
 
     struct Yeet {
-        // uint256 timestamp;
         string text;
     }
 

@@ -77,16 +77,6 @@ describe("Yo Contract", function () {
     it("Should NOT allow non-owner to add a module", async function () {
       await assert.isRejected(yContractOtherConnected.addModule(yoContract.target), /only owner/);
     });
-
-    // it("Should setMe based on caller address", async function () {
-    //   const timestamp = Math.floor(Date.now() / 1000);
-    //   const structName = hhethers.encodeBytes32String("Yeet");
-    //   const text = hhethers.encodeBytes32String("hello there");
-    //   const yeetData = hhethers.AbiCoder.defaultAbiCoder().encode(["uint256", "string"], [timestamp, text]);
-    //   await yContract.setMe(structName, timestamp, yeetData);
-    //   // expect the data to now be in the me hash table
-    //   expect(await yContract.me(ownerAddr, structName, timestamp)).to.equal(yeetData);
-    // });
   });
 
   describe("Ether", function () {
