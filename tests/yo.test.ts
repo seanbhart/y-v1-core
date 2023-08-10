@@ -34,6 +34,7 @@ describe("Yo Contract", function () {
     it("Should delegatecall yeet", async function () {
       const text = "hello there";
       // first format the data using the module
+      // const yeet = await yoContract.yeetize(text);
       const data = await yoContract.serialize(text);
       const tx = await yContract.yeet(yoContract.target, data);
       await tx.wait();
@@ -42,29 +43,29 @@ describe("Yo Contract", function () {
       // We can get the event logs with the `getFilter` method
       const filter = yContract.filters.Yeeted(ownerAddr);
       const logs = await yContract.queryFilter(filter);
-      console.log("logs", logs);
+      // console.log("logs", logs);
       expect(logs.length).to.equal(1);
 
       // deserialize the event data
       const eventData = logs[0].args?.data;
       const eventText = await yoContract.deserialize(eventData);
-      console.log("eventText", eventText);
+      console.log("eventText", eventText.text);
       const eventTimestamp = logs[0].args?.timestamp;
       console.log("eventTimestamp", eventTimestamp);
-      expect(eventText).to.equal(text);
+      expect(eventText.text).to.equal(text);
 
       // check that the event data matches the stored data
       const refAddress = logs[0].args?.ref;
       console.log("refAddress", refAddress);
       expect(refAddress).to.equal(yoContract.target);
       const ySavedData = await yContract.me(refAddress, "yeet", eventTimestamp);
-      console.log("yContract savedData", ySavedData);
-      expect(ySavedData).to.equal(eventData);
+      const ySavedText = await yoContract.deserialize(ySavedData);
+      console.log("yContract savedText", ySavedText.text);
+      expect(ySavedText.text).to.equal(eventText.text);
 
       // read the Y contract data from the Yo contract
       const result = await yoContract.read(yContract.target, eventTimestamp);
-      const deserializEventData = await yoContract.deserialize(eventData);
-      expect(result).to.equal(deserializEventData);
+      expect(result.text).to.equal(eventText.text);
     });
   });
 });

@@ -9,12 +9,12 @@ contract Y {
     // the uint256 is the timestamp, and the bytes is the data struct.
     mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
 
-    // the owners that can modify the account
-    address[] public owners;
-
     // TODO: rename modules to branches?
     // the modules in the order to display
     address[] public modules;
+
+    // the owners that can modify the account
+    address[] public owners;
 
     event ModuleAdded(address indexed module);
     event ModuleRemoved(address indexed module);
@@ -40,6 +40,17 @@ contract Y {
         (success, response) = module.delegatecall(
             abi.encodeWithSignature("yeet(address,bytes)", module, _data)
         );
+
+        // Check if the "youse" function exists on the module contract before calling it
+        bytes memory youseFunctionSignature = abi.encodeWithSignature("youse()");
+        (bool functionExists,) = module.staticcall(youseFunctionSignature);
+        if (functionExists) {
+            // Send the account address that should be associated
+            // with the data that will be stored in the module
+            (success, response) = module.call(
+                abi.encodeWithSignature("youse(address,bytes)", msg.sender, _data)
+            );
+        }
     }
 
     /**

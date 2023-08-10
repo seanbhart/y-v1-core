@@ -17,24 +17,35 @@ import { Y } from "./Y.sol";
     // DATA WILL NOT BE STORED HERE (ONLY IN THE Y CONTRACT)
     mapping(address => mapping(string => mapping(uint256 => bytes))) public me;
 
+    // Optional storage hash table used to store data in the Yo contract
+    // for data aggregation by data type, rather than by user (in the Y contract)
+    // The first address is the user address, the second uint256 is the timestamp,
+    // and the data is in the format of the data type
+    mapping(address => mapping(uint256 => Yeet)) public yeets;
+
     struct Yeet {
-        uint256 timestamp;
+        // uint256 timestamp;
         string text;
     }
 
     event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
+    event Yoused(address indexed account, uint256 indexed timestamp, Yeet data);
     
     constructor() {
         console.log("Deploying a Yo contract");
     }
 
-    function serialize(string memory _text) public pure returns (bytes memory) {
-        return bytes(_text);
+    function yeetize(string memory _text) public pure returns (Yeet memory _yeet) {
+        return Yeet(_text);
     }
 
-    function deserialize(bytes memory _data) public pure returns (string memory) {
-        // Yeet memory yt = abi.decode(_data, (Yeet));
-        return string(_data);
+    function serialize(string memory _text) public pure returns (bytes memory) {
+        Yeet memory _yeet = Yeet(_text);
+        return abi.encode(_yeet);
+    }
+
+    function deserialize(bytes memory _data) public pure returns (Yeet memory _yeet) {
+        _yeet = abi.decode(_data, (Yeet));
     }
 
     /**
@@ -45,11 +56,18 @@ import { Y } from "./Y.sol";
      * @param _data The data to be stored
      * @return The timestamp of the yeet
      */
-    function yeet(address refAddress, bytes memory _data) public payable returns (uint256) {
+    function yeet(address refAddress, bytes memory _data) public returns (uint256) {
         uint256 timestamp = block.timestamp;
         me[refAddress]["yeet"][timestamp] = _data;
         emit Yeeted(msg.sender, refAddress, timestamp, _data);
         return timestamp;
+    }
+
+    function youse(address account, bytes memory _data) public {
+        uint256 timestamp = block.timestamp;
+        Yeet memory deserializedYeet = deserialize(_data);
+        yeets[account][timestamp] = deserializedYeet;
+        emit Yoused(account, timestamp, deserializedYeet);
     }
 
     /**
@@ -58,7 +76,7 @@ import { Y } from "./Y.sol";
      * @param timestamp The timestamp of the yeet
      * @return The text of the Yo yeet
      */
-    function read(address payable y, uint256 timestamp) public view returns (string memory) {
+    function read(address payable y, uint256 timestamp) public view returns (Yeet memory) {
         Y yContract = Y(y);
         return deserialize(yContract.me(address(this), "yeet", timestamp));
     }
