@@ -132,6 +132,11 @@ const config: HardhatUserConfig = {
       accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_ACCT3}`],
       gasPrice: 150000000000, // 150 Gwei
     },
+    "optimism-goerli": {
+      url: `${process.env.NETWORK_OPTIMISM_GOERLI}`,
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_ACCT3}`],
+      gasPrice: 1000000000, // 1 Gwei
+    },
     "zk-evm": {
       url: "https://zkevm-rpc.com",
       accounts: [key as string],

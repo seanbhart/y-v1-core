@@ -62,23 +62,4 @@ interface IYo {
      */
     function feed(bytes[] memory _yts) external view returns (string memory);
 
-
-    /**
-     * OPTIONAL FUNCTIONS
-     */
-
-    /**
-     * @notice Returns the most recent yeets
-     * @param earliest The earliest timestamp to consider for the yeets
-     * @return The list of yeets
-     */
-    function latest(uint256 earliest) external view returns (Yeet[] memory);
-
-    /**
-     * @notice Returns the HTML representation of the most recent yeets
-     * @param earliest The earliest timestamp to consider for the yeets
-     * @return The HTML string representation of the yeets
-     */
-    function home(uint256 earliest) external view returns (string memory);
-
 }

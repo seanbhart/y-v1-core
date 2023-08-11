@@ -3,7 +3,7 @@ pragma solidity >=0.8.4;
 
 import { console } from "hardhat/console.sol";
 
-contract Y {
+contract Ybranch {
     struct Branch {
         address addr;
         uint[] branchIds;
