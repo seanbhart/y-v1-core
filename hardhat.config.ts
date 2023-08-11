@@ -130,7 +130,12 @@ const config: HardhatUserConfig = {
     polygon: {
       url: `${process.env.NETWORK_POLYGON}`,
       accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_ACCT3}`],
-      gasPrice: 150000000000, // 150 Gwei
+      // gasPrice: 150000000000, // 150 Gwei
+    },
+    optimism: {
+      url: `${process.env.NETWORK_OPTIMISM}`,
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_DEV01}`],
+      // gasPrice: 1000000000, // 1 Gwei
     },
     "optimism-goerli": {
       url: `${process.env.NETWORK_OPTIMISM_GOERLI}`,
