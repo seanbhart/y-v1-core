@@ -124,7 +124,7 @@ $ npm clean
 Deploy the contracts to Hardhat Network:
 
 ```sh
-$ hh deploy --network optimism-goerli"
+$ hh deploy --network optimism-goerli
 ```
 
 ### Run Scripts

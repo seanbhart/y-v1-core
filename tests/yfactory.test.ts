@@ -32,13 +32,17 @@ describe("YFactory Contract", function () {
     const tx = await yFactory.create();
     await tx.wait();
 
+    // check for stored created contracts
+    const yContracts = await yFactory.getMy();
+    console.log("yContracts", yContracts);
+
+    // check the logs
     const filter = yFactory.filters.Created();
     const logs = await yFactory.queryFilter(filter);
     console.log("logs", logs);
     expect(logs.length).to.equal(1);
-
-    // deserialize the event data
     const newYAddress = logs[0].args?.y;
+    console.log("newYAddress", newYAddress);
     expect(newYAddress).to.exist;
 
     const YFactory = (await hhethers.getContractFactory("Y")) as Y__factory;
