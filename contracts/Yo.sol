@@ -136,6 +136,40 @@ import { Y } from "./Y.sol";
     }
 
     /**
+     * @notice Converts a Yeet struct in bytes into a JSON string
+     * @param _data The Yeet struct in bytes to be converted
+     * @return _json The JSON string representation of the Yeet struct
+     */
+    function jsonify(bytes memory _data) public pure returns (string memory _json) {
+        Yeet memory _yeet = abi.decode(_data, (Yeet));
+        _json = string(abi.encodePacked(
+            "{",
+            "\"account\":\"", Strings.toHexString(uint256(uint160(_yeet.account))), "\",",
+            "\"username\":\"", _yeet.username, "\",",
+            "\"avatar\":\"", _yeet.avatar, "\",",
+            "\"timestamp\":", Strings.toString(_yeet.timestamp), ",",
+            "\"text\":\"", _yeet.text, "\"",
+            "}"
+        ));
+    }
+
+    /**
+     * @notice Converts an array of Yeet structs in bytes into a JSON string
+     * @param _data The array of Yeet structs in bytes to be converted
+     * @return _json The JSON string representation of the Yeet structs
+     */
+    function jsonifyAll(bytes[] memory _data) public pure returns (string memory _json) {
+        _json = "[";
+        for (uint256 i = 0; i < _data.length; i++) {
+            _json = string(abi.encodePacked(_json, jsonify(_data[i])));
+            if (i < _data.length - 1) {
+                _json = string(abi.encodePacked(_json, ","));
+            }
+        }
+        _json = string(abi.encodePacked(_json, "]"));
+    }
+
+    /**
      * @notice Converts a serialized Yeet into a HTML string
      * @dev This allows the Yo contract to display the data in HTML format
      * in an easily embeddable way so that it can be displayed on a website

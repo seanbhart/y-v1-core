@@ -60,6 +60,20 @@ interface IYo {
     function deserializeAll(bytes[] memory _data) external pure returns (Yeet[] memory _yeets);
 
     /**
+     * @notice Converts a Yeet struct in bytes into a JSON string
+     * @param _data The Yeet struct in bytes to be converted
+     * @return _json The JSON string representation of the Yeet struct
+     */
+    function jsonify(bytes memory _data) external pure returns (string memory _json);
+
+    /**
+     * @notice Converts an array of Yeet structs in bytes into a JSON string
+     * @param _data The array of Yeet structs in bytes to be converted
+     * @return _json The JSON string representation of the Yeet structs
+     */
+    function jsonifyAll(bytes[] memory _data) external pure returns (string memory _json);
+
+    /**
      * @notice Converts a serialized Yeet into a HTML string
      * @dev This allows the Yo contract to display the data in HTML format
      * in an easily embeddable way so that it can be displayed on a website

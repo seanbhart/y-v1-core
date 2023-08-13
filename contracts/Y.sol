@@ -258,7 +258,7 @@ contract Y is IY {
      * @param earliest The earliest timestamp to retrieve content from
      * @return The latest content for an account
      */
-    function recent(
+    function recentBytes(
         address module,
         uint256 earliest
     ) public view returns (bytes[] memory) {
@@ -288,6 +288,23 @@ contract Y is IY {
             _yts[i] = me[module][_latestTimestamps[i]];
         }
         return _yts;
+    }
+
+    /**
+     * @notice Returns the latest content from a module for a specific account in JSON format
+     * @param module The address of the module to retrieve content from
+     * @param earliest The earliest timestamp to retrieve content from
+     * @return The latest content for an account in JSON format
+     */
+    function recentJson(
+        address module,
+        uint256 earliest
+    ) public view returns (string memory) {
+        // Get the recent bytes
+        bytes[] memory recent = recentBytes(module, earliest);
+
+        // Use IYo to jsonify the bytes
+        return IYo(module).jsonifyAll(recent);
     }
 
     /**

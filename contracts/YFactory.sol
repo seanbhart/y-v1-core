@@ -42,4 +42,12 @@ contract YFactory {
     function getMy() public view returns (address[] memory) {
         return mY[msg.sender];
     }
+
+    /**
+     * @dev Returns the addresses of all Y contracts
+     * @return An array of addresses of all Y contracts
+     */
+    function getAll() public view returns (address[] memory) {
+        return allY;
+    }
 }
