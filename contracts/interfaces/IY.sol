@@ -35,6 +35,17 @@ interface IY {
     function removeModule(address module) external;
 
     /**
+     * @notice Returns the latest content from a module for a specific account
+     * @param module The address of the module to retrieve content from
+     * @param earliest The earliest timestamp to retrieve content from
+     * @return The latest content for an account
+     */
+    function recent(
+        address module,
+        uint256 earliest
+    ) external view returns (bytes[] memory);
+
+    /**
      * @notice Returns the latest content in html format from a module for a specific account
      * @param module The address of the module to retrieve content from
      * @param earliest The earliest timestamp to retrieve content from

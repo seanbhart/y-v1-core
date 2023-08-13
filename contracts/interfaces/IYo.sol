@@ -53,6 +53,13 @@ interface IYo {
     function save(bytes memory _data) external returns (bytes memory);
 
     /**
+     * @notice Deserializes an array of bytes into Yeets
+     * @param _data The array of bytes to be deserialized
+     * @return _yeets The array of deserialized Yeets
+     */
+    function deserializeAll(bytes[] memory _data) external pure returns (Yeet[] memory _yeets);
+
+    /**
      * @notice Converts a serialized Yeet into a HTML string
      * @dev This allows the Yo contract to display the data in HTML format
      * in an easily embeddable way so that it can be displayed on a website

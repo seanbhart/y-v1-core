@@ -107,6 +107,18 @@ import { Y } from "./Y.sol";
     }
 
     /**
+     * @notice Deserializes an array of bytes into Yeets
+     * @param _data The array of bytes to be deserialized
+     * @return _yeets The array of deserialized Yeets
+     */
+    function deserializeAll(bytes[] memory _data) public pure returns (Yeet[] memory _yeets) {
+        _yeets = new Yeet[](_data.length);
+        for (uint256 i = 0; i < _data.length; i++) {
+            _yeets[i] = deserialize(_data[i]);
+        }
+    }
+
+    /**
      * @notice Converts a serialized Yeet into a HTML string
      * @dev This allows the Yo contract to display the data in HTML format
      * in an easily embeddable way so that it can be displayed on a website

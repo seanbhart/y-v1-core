@@ -249,6 +249,48 @@ contract Y is IY {
     }
 
     /**
+     * AGGREGATORS
+    */
+
+    /**
+     * @notice Returns the latest content from a module for a specific account
+     * @param module The address of the module to retrieve content from
+     * @param earliest The earliest timestamp to retrieve content from
+     * @return The latest content for an account
+     */
+    function recent(
+        address module,
+        uint256 earliest
+    ) public view returns (bytes[] memory) {
+        // Get all the timestamps for the account for this module
+        uint256[] memory timestamps = getYeetstamps(module);
+        if (timestamps.length == 0) {
+            return new bytes[](0);
+        }
+
+        // filter out the timestamps that are earlier than the earliest
+        // this is done by creating a new array and pushing the timestamps
+        // that are later than the earliest
+        uint256[] memory _latestTimestamps = new uint256[](timestamps.length);
+        uint256 count = 0;
+        for (uint256 i = 0; i < timestamps.length; i++) {
+            if (timestamps[i] >= earliest) {
+                _latestTimestamps[count] = timestamps[i];
+                count++;
+            }
+        }
+
+        // The appropriate Yeets will be in the me hash table,
+        // accessible via the module and timestamp - they will
+        // be serialized structs and can be decoded via the module
+        bytes[] memory _yts = new bytes[](_latestTimestamps.length);
+        for (uint256 i = 0; i < _latestTimestamps.length; i++) {
+            _yts[i] = me[module][_latestTimestamps[i]];
+        }
+        return _yts;
+    }
+
+    /**
      * HTML GENERATORS
     */
 
