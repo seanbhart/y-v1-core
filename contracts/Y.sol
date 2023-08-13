@@ -24,6 +24,9 @@ contract Y is IY {
     // a list of all the timestamps for a user's yeets
     // the logic follows the "me" mapping - address is the MODULE address
     mapping(address => uint256[]) public yeetstamps;
+    // The avatar is a string that represents the IPFS hash of the user's avatar
+    string private _avatar;
+    string private _username;
 
 // |                                                                              |
 // |------------------------ END REQUIRED storage ORDER --------------------------|
@@ -33,6 +36,7 @@ contract Y is IY {
 // |------------- The following variables and functions are generally ------------|
 // |----------------- needed to be compatible with most modules ------------------|
 // |                                                                              |
+    string private _bio;
 
     // TODO: rename modules to branches?
     // the modules in the order to display
@@ -74,6 +78,83 @@ contract Y is IY {
      */
     function getYeetstamps(address module) public view returns (uint256[] memory) {
         return yeetstamps[module];
+    }
+
+    /**
+     * ACCOUNT INFO
+     */
+
+    /**
+     * @notice Returns the username for the account
+     * @dev Anyone can retrieve the username for the account
+     * @return The username
+     */
+    function username() public view virtual returns (string memory) {
+        return _username;
+    }
+
+    /**
+     * @notice Sets the username for the account
+     * @dev Allows the owner to set a username for their account
+     * @param _newUsername The desired username
+     */
+    function setUsername(string memory _newUsername) public onlyOwner {
+        _username = _newUsername;
+    }
+
+    /**
+     * @notice Returns the bio for the account
+     * @dev Anyone can retrieve the bio for the account
+     * @return The bio
+     */
+    function bio() public view virtual returns (string memory) {
+        return _bio;
+    }
+
+    /**
+     * @notice Sets the bio for the account
+     * @dev Allows the owner to set a bio for their account
+     * @param _newBio The desired bio
+     */
+    function setBio(string memory _newBio) public onlyOwner {
+        _bio = _newBio;
+    }
+
+    /**
+     * @notice Returns the avatar for the account
+     * @dev Anyone can retrieve the avatar for the account
+     * @return The avatar hash
+     */
+    function avatar() public view virtual returns (string memory) {
+        return _avatar;
+    }
+
+    /**
+     * @notice Returns the avatar for the account
+     * @dev Anyone can retrieve the avatar for the account
+     * @return The avatar
+     */
+     function avatarURI() public view virtual returns (string memory) {
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length > 0 ? string.concat(baseURI, _avatar) : "";
+    }
+
+    /**
+     * @dev Base URI for computing {avatarURI}. If set, the resulting URI for
+     * the avatar will be the concatenation of the `baseURI` and the `avatar`
+     * which is the IPFS hash of the user's avatar
+     */
+    function _baseURI() internal view virtual returns (string memory) {
+        return "https://ipfs.io/ipfs/";
+    }
+
+    /**
+     * @notice Sets the avatar for the account
+     * @dev Allows the owner to set the avatar for their account
+     * @param _newAvatarIpfsHash The desired avatar IPFS hash
+     */
+    function setAvatar(string memory _newAvatarIpfsHash) public onlyOwner {
+        _avatar = _newAvatarIpfsHash;
     }
 
     /**

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.4;
 
-import { Yeet } from "../Structs.sol";
+struct Yeet {
+    address account;
+    string username;
+    string avatar;
+    uint256 timestamp;
+    string text;
+}
 
 /**
  * @title Yo Interface

@@ -4,7 +4,7 @@ import { Y, Y__factory, Yo, Yo__factory } from "../types";
 
 const Y_CONTRACT_ADDRESS = process.env.Y_CONTRACT_ADDRESS_OPTIMISM;
 const YO_CONTRACT_ADDRESS = process.env.YO_CONTRACT_ADDRESS_OPTIMISM;
-const devKey = process.env.ACCOUNT_KEY_PRIV_DEV01;
+const devKey = process.env.ACCOUNT_KEY_PRIV_DEV04;
 
 async function main() {
   if (!Y_CONTRACT_ADDRESS || !YO_CONTRACT_ADDRESS || !devKey) {
@@ -25,22 +25,22 @@ async function main() {
   const timestamps = await yoContract.getTimestamps();
   console.log("timestamps", timestamps);
 
-  // Add a Module
-  const tx = await yContract.addModule(YO_CONTRACT_ADDRESS);
-  await tx.wait();
+  // // Add a Module
+  // const tx = await yContract.addModule(YO_CONTRACT_ADDRESS);
+  // await tx.wait();
 
-  // Use the text "hello there" in the serialize function to create bytes
-  // const text = "hello there";
-  const text =
-    'Satoshi Nakamoto\'s development of Bitcoin in 2009 has often been hailed as a radical development in money and currency, being the first example of a digital asset which simultaneously has no backing or "intrinsic value" and no centralized issuer or controller. However, another, a';
-  const data = await yoContract.serialize(text);
+  // // Use the text "hello there" in the serialize function to create bytes
+  // // const text = "hello there";
+  // const text =
+  //   'Satoshi Nakamoto\'s development of Bitcoin in 2009 has often been hailed as a radical development in money and currency, being the first example of a digital asset which simultaneously has no backing or "intrinsic value" and no centralized issuer or controller. However, another, a';
+  // const data = await yoContract.serialize(text);
 
-  // Pass the bytes to the Y contract yeet function
-  const yeetTx = await yContract.yeet(yoContract.target, data);
-  await yeetTx.wait();
+  // // Pass the bytes to the Y contract yeet function
+  // const yeetTx = await yContract.yeet(yoContract.target, data);
+  // await yeetTx.wait();
 
-  // wait a few more seconds to ensure the events are indexed
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // // wait a few more seconds to ensure the events are indexed
+  // await new Promise((resolve) => setTimeout(resolve, 5000));
 
   // The contract will emit an event when the yo is yeeted
   // We can get the event logs with the `getFilter` method

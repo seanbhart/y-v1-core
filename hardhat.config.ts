@@ -16,6 +16,7 @@ let key = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
 const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
 const devKey1 = process.env.ACCOUNT_KEY_PRIV_DEV01 || "";
 const devKey2 = process.env.ACCOUNT_KEY_PRIV_ACCT2 || "";
+const devKey4 = process.env.ACCOUNT_KEY_PRIV_DEV04 || "";
 if (devMode) {
   console.log("devMode: ", devMode);
   key = devKey;
@@ -109,6 +110,10 @@ const config: HardhatUserConfig = {
           privateKey: devKey2,
           balance: "10000000000000000000",
         },
+        {
+          privateKey: devKey4,
+          balance: "10000000000000000000",
+        },
       ],
       chainId: chainIds.hardhat,
       // forking: {
@@ -139,7 +144,7 @@ const config: HardhatUserConfig = {
     },
     optimism: {
       url: `${process.env.NETWORK_OPTIMISM}`,
-      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_DEV01}`],
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_DEV04}`],
       // gasPrice: 1000000000, // 1 Gwei
     },
     "optimism-goerli": {

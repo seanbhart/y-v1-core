@@ -3,7 +3,7 @@ pragma solidity >=0.8.4;
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { console } from "hardhat/console.sol";
-import { Yeet } from "./Structs.sol";
+import { Yeet } from "./interfaces/IYo.sol";
 import { IYo } from "./interfaces/IYo.sol";
 import { Y } from "./Y.sol";
 
@@ -28,7 +28,9 @@ import { Y } from "./Y.sol";
     // DATA WILL NOT BE STORED HERE (ONLY IN THE Y CONTRACT)
     mapping(address => mapping(uint256 => bytes)) public me;
     mapping(address => uint256[]) public yeetstamps;
-    
+    string private _avatar;
+    string private _username;
+
 // |                                                                              |
 // |                                                                              |
 // |---------------------------- END REQUIRED storage ----------------------------|
@@ -40,6 +42,7 @@ import { Y } from "./Y.sol";
     // Timestamps are stored in a separate array to allow for searching by timestamp
     mapping(uint256 => Yeet[]) public yeets;
     uint256[] public timestamps;
+    string public name = "Yo";
 
     event Saved(address indexed account, uint256 indexed timestamp, Yeet data);
 
@@ -62,7 +65,7 @@ import { Y } from "./Y.sol";
         // and the timestamp will be set to zero
         // but both will be set in the yeet function to ensure
         // the data is accurately associated with the user account and the block timestamp
-        Yeet memory _yeet = Yeet(address(0), 0, _text);
+        Yeet memory _yeet = Yeet(address(0), "", "", 0, _text);
         return abi.encode(_yeet);
     }
 
@@ -88,9 +91,11 @@ import { Y } from "./Y.sol";
         address account = address(this);
         uint256 timestamp = block.timestamp;
         // deserialize the data into a Yeet struct
-        // so that the account and timestamp can be set
+        // so that the account info and timestamp can be set
         Yeet memory deserializedYeet = deserialize(_data);
         deserializedYeet.account = account;
+        deserializedYeet.username = _username;
+        deserializedYeet.avatar = _avatar;
         deserializedYeet.timestamp = timestamp;
         _data = abi.encode(deserializedYeet);
         me[ref][timestamp] = _data;
@@ -126,13 +131,41 @@ import { Y } from "./Y.sol";
      */
     function html(bytes memory _yt) public pure returns (string memory) {
         Yeet memory yt = deserialize(_yt);
+        /* solhint-disable max-line-length */
         return string(abi.encodePacked(
-            "<div class=\"yeet\">",
-                "<div class=\"yeet-text\">",
-                    yt.text,
+            "<div style=\"width: 360px; margin-top: 10px; margin-bottom: 10px; padding: 10px; font-family: Lucida Sans, sans-serif; display: flex; background-color: #111;\">",
+                "<div style=\"flex: 1; padding-right: 10px\">",
+                    "<img src=\"https://placekitten.com/48/48\" alt=\"Profile Picture\" style=\"width: 64px; height: 64px; box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);\"/>",
+                    "<div style=\"color: #666; font-size: 12px; margin-top: 8px; width: 64px; display: flex; justify-content: space-between; overflow: hidden;\">",
+                        "<div style=\"white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: left; width: 26px;\">",
+                            "0xF863B06A73845d19F0972af747358F60d80A442C",
+                        "</div>",
+                        "<div style=\"white-space: nowrap; overflow: show; font-size: 12px\">",
+                            "...",
+                        "</div>",
+                        "<div style=\"white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: right; direction: rtl; width: 28px;\">",
+                            "0xF863B06A73845d19F0972af747358F60d80A442C",
+                        "</div>",
+                    "</div>",
+                "</div>",
+                "<div style=\"flex: 5; margin-left: 10px\">",
+                    "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
+                        "<div>",
+                            "<div style=\"font-weight: bold; color: #666\">",
+                                "randomerror.eth",
+                            "</div>",
+                        "</div>",
+                        "<div id=\"yeet-timestamp\" style=\"color: #999; font-size: 12px\">",
+                        yt.timestamp,
+                        "</div>",
+                    "</div>",
+                    "<div id=\"yeet-text\" style=\"margin-top: 10px; font-size: 14px; color: #999; display: flex; justify-content: left; text-align: left;\">",
+                        yt.text,
+                    "</div>",
                 "</div>",
             "</div>"
         ));
+        /* solhint-enable max-line-length */
     }
 
     /**
@@ -208,6 +241,8 @@ import { Y } from "./Y.sol";
     function yeetize(string memory _text) public pure returns (Yeet memory _yeet) {
         return Yeet({
             account: address(0),
+            username: "",
+            avatar: "",
             timestamp: 0,
             text: _text
         });
@@ -226,7 +261,7 @@ import { Y } from "./Y.sol";
                 return _yeets[i];
             }
         }
-        return Yeet(address(0), 0, "");
+        return Yeet(address(0), "", "", 0, "");
     }
 
     /**

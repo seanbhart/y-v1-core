@@ -1,6 +1,8 @@
 import { ethers as hhethers } from "hardhat";
 
-import { Y, YFactory, YFactory__factory, Y__factory } from "../types";
+// import ERC20ABI from "../assets/ERC20ABI.json";
+import { Y, Y__factory } from "../types";
+import { YFactory, YFactory__factory } from "../types";
 
 const Y_FACTORY_ADDRESS = process.env.Y_FACTORY_ADDRESS_OPTIMISM;
 const devKey = process.env.ACCOUNT_KEY_PRIV_DEV01;
@@ -31,6 +33,13 @@ async function main() {
   const YFactory = (await hhethers.getContractFactory("Y")) as Y__factory;
   const newYContract = YFactory.attach(newYAddress) as Y;
   console.log("newYContract", newYContract);
+
+  // // Test with an ERC20 contract
+  // const address = "0xbC75bBb748CEEC2E36D07BE92A0663d75ef6635d";
+  // const erc20ContractAddress = "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"; // Optimism USDC
+  // const erc20Contract = await hhethers.getContractAt(ERC20ABI, erc20ContractAddress);
+  // const balance = await erc20Contract.balanceOf(address);
+  // console.log(`Balance of address ${address}: ${balance}`);
 }
 
 main()
