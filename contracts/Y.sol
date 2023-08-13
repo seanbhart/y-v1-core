@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.4;
 
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import { IERC721Metadata } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import { console } from "hardhat/console.sol";
 import { IYo } from "./interfaces/IYo.sol";
 import { IY } from "./interfaces/IY.sol";
-
 
 contract Y is IY {
 
@@ -135,8 +136,9 @@ contract Y is IY {
      * @return The avatar
      */
      function avatarURI() public view virtual returns (string memory) {
-        string memory baseURI = _baseURI();
-        return bytes(baseURI).length > 0 ? string.concat(baseURI, _avatar) : "";
+        // string memory baseURI = _baseURI();
+        // return bytes(baseURI).length > 0 ? string.concat(baseURI, _avatar) : "";
+        return _avatar;
     }
 
     /**
@@ -148,13 +150,28 @@ contract Y is IY {
         return "https://ipfs.io/ipfs/";
     }
 
+    // /**
+    //  * @notice Sets the avatar for the account
+    //  * @dev Allows the owner to set the avatar for their account
+    //  * @param _newAvatarIpfsHash The desired avatar IPFS hash
+    //  */
+    // function setAvatar(string memory _newAvatarIpfsHash) public onlyOwner {
+    //     _avatar = _newAvatarIpfsHash;
+    // }
+
     /**
      * @notice Sets the avatar for the account
-     * @dev Allows the owner to set the avatar for their account
-     * @param _newAvatarIpfsHash The desired avatar IPFS hash
+     * @dev Allows the owner to set the avatar for their account as an NFT they own
+     * @param nftContract The address of the NFT contract
+     * @param tokenId The ID of the NFT
      */
-    function setAvatar(string memory _newAvatarIpfsHash) public onlyOwner {
-        _avatar = _newAvatarIpfsHash;
+    function setAvatar(address nftContract, uint256 tokenId) public onlyOwner {
+        // Check if the caller owns the NFT
+        require(IERC721(nftContract).ownerOf(tokenId) == msg.sender, "Caller does not own the NFT");
+
+        // Get the token URI and set it as the avatar
+        string memory tokenURI = IERC721Metadata(nftContract).tokenURI(tokenId);
+        _avatar = tokenURI;
     }
 
     /**
@@ -248,7 +265,7 @@ contract Y is IY {
         // Get all the timestamps for the account for this module
         uint256[] memory timestamps = getYeetstamps(module);
         if (timestamps.length == 0) {
-            return "no content";
+            return "";
         }
 
         // filter out the timestamps that are earlier than the earliest
@@ -280,6 +297,9 @@ contract Y is IY {
      */
     function walls(uint256 earliest) public view returns (string memory) {
         string memory html = "";
+        if (modules.length == 0) {
+            return "no modules";
+        }
         for (uint256 i = 0; i < modules.length; i++) {
             html = string(abi.encodePacked(html, wall(modules[i], earliest)));
         }
@@ -313,6 +333,44 @@ contract Y is IY {
      */
     function withdraw() public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
+    }
+
+    /**
+     * @dev Allows an owner to add a new owner to the owners array
+     * @param newOwner The address of the new owner
+     */
+    function addOwner(address newOwner) public onlyOwner {
+        owners.push(newOwner);
+    }
+
+    /**
+     * @notice Removes an owner from the owners array
+     * @dev Allows an owner to remove an owner from the owners array
+     * @param owner The address of the owner to be removed
+     */
+    function removeOwner(address owner) public onlyOwner {
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == owner) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                break;
+            }
+        }
+    }
+
+    /**
+     * @notice Replaces an existing owner with a new owner
+     * @dev Allows the owner to replace an existing owner with a new owner
+     * @param oldOwner The address of the owner to be replaced
+     * @param newOwner The address of the new owner
+     */    
+    function replaceOwner(address oldOwner, address newOwner) public onlyOwner {
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == oldOwner) {
+                owners[i] = newOwner;
+                break;
+            }
+        }
     }
 
     /**

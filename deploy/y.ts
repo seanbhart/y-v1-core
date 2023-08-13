@@ -5,14 +5,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  const yFactory = await deploy("YFactory", {
+  const y = await deploy("Y", {
     from: deployer,
+    args: [deployer], // assuming the owner is the deployer
     log: true,
   });
 
-  console.log(`YFactory contract: `, yFactory.address);
+  console.log(`Y contract: `, y.address);
 };
 
+func.id = "deploy_y";
+func.tags = ["Y"];
+
 export default func;
-func.id = "deploy_yfactory";
-func.tags = ["YFactory"];

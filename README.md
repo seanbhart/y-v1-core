@@ -127,6 +127,10 @@ Deploy the contracts to Hardhat Network:
 $ hh deploy --network optimism-goerli
 ```
 
+```sh
+$ hh deploy --network optimism-goerli --tags Yo
+```
+
 ### Run Scripts
 
 Run scripts like `scripts/sample-script.ts`:

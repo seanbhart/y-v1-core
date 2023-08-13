@@ -6,6 +6,7 @@ import { Y } from "./Y.sol";
 contract YFactory {
     // a list of created Y contracts for each creator
     mapping(address => address[]) public mY;
+    address[] public allY;
 
     event Created(address indexed y, address indexed creator);
 
@@ -16,6 +17,7 @@ contract YFactory {
     function create() public returns (address) {
         Y newY = new Y(msg.sender);
         mY[msg.sender].push(address(newY));
+        allY.push(address(newY));
         emit Created(address(newY), msg.sender);
         return address(newY);
     }

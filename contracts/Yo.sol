@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >=0.8.4;
 
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { console } from "hardhat/console.sol";
 import { Yeet } from "./interfaces/IYo.sol";
@@ -131,32 +132,35 @@ import { Y } from "./Y.sol";
      */
     function html(bytes memory _yt) public pure returns (string memory) {
         Yeet memory yt = deserialize(_yt);
+        // string memory addressString = string(abi.encodePacked("0x", Strings.toHexString(yt.account)));
         /* solhint-disable max-line-length */
         return string(abi.encodePacked(
             "<div style=\"width: 360px; margin-top: 10px; margin-bottom: 10px; padding: 10px; font-family: Lucida Sans, sans-serif; display: flex; background-color: #111;\">",
-                "<div style=\"flex: 1; padding-right: 10px\">",
-                    "<img src=\"https://placekitten.com/48/48\" alt=\"Profile Picture\" style=\"width: 64px; height: 64px; box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);\"/>",
-                    "<div style=\"color: #666; font-size: 12px; margin-top: 8px; width: 64px; display: flex; justify-content: space-between; overflow: hidden;\">",
+                "<div id=\"yeet-avatar\" style=\"flex: 1; padding-right: 10px\">",
+                    "<img src=\"",
+                    yt.avatar,
+                    "\" alt=\"avatar\" style=\"width: 64px; height: 64px; box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);\"/>",
+                    "<div id=\"yeet-account\" style=\"color: #666; font-size: 12px; margin-top: 8px; width: 64px; display: flex; justify-content: space-between; overflow: hidden;\">",
                         "<div style=\"white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: left; width: 26px;\">",
-                            "0xF863B06A73845d19F0972af747358F60d80A442C",
+                            Strings.toHexString(yt.account),
                         "</div>",
                         "<div style=\"white-space: nowrap; overflow: show; font-size: 12px\">",
                             "...",
                         "</div>",
                         "<div style=\"white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: right; direction: rtl; width: 28px;\">",
-                            "0xF863B06A73845d19F0972af747358F60d80A442C",
+                            Strings.toHexString(yt.account),
                         "</div>",
                     "</div>",
                 "</div>",
                 "<div style=\"flex: 5; margin-left: 10px\">",
                     "<div style=\"display: flex; justify-content: space-between; align-items: flex-start;\">",
                         "<div>",
-                            "<div style=\"font-weight: bold; color: #666\">",
-                                "randomerror.eth",
+                            "<div id=\"yeet-username\" style=\"font-weight: bold; color: #666\">",
+                                yt.username,
                             "</div>",
                         "</div>",
                         "<div id=\"yeet-timestamp\" style=\"color: #999; font-size: 12px\">",
-                        yt.timestamp,
+                        Strings.toString(uint256(yt.timestamp)),
                         "</div>",
                     "</div>",
                     "<div id=\"yeet-text\" style=\"margin-top: 10px; font-size: 14px; color: #999; display: flex; justify-content: left; text-align: left;\">",
@@ -178,7 +182,9 @@ import { Y } from "./Y.sol";
         for (uint256 i = 0; i < _yts.length; i++) {
             htmlFeed = string(abi.encodePacked(htmlFeed, html(_yts[i])));
         }
-        htmlFeed = string(abi.encodePacked("<div class=\"yeet-feed\">", htmlFeed, "</div>"));
+        /* solhint-disable max-line-length */
+        htmlFeed = string(abi.encodePacked("<div id=\"yeet-feed\" style=\"width: 360px; font-family: Arial, sans-serif; display: flex; flex-direction: column; max-width: 100% !important;\">", htmlFeed, "</div>"));
+        /* solhint-enable max-line-length */
         return htmlFeed;
     }
 

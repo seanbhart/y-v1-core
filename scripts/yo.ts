@@ -25,80 +25,84 @@ async function main() {
   const timestamps = await yoContract.getTimestamps();
   console.log("timestamps", timestamps);
 
-  // // Add a Module
-  // const tx = await yContract.addModule(YO_CONTRACT_ADDRESS);
-  // await tx.wait();
+  // Check modules
+  let modules = await yContract.getModules();
+  console.log("modules", modules);
 
-  // // Use the text "hello there" in the serialize function to create bytes
-  // // const text = "hello there";
-  // const text =
-  //   'Satoshi Nakamoto\'s development of Bitcoin in 2009 has often been hailed as a radical development in money and currency, being the first example of a digital asset which simultaneously has no backing or "intrinsic value" and no centralized issuer or controller. However, another, a';
-  // const data = await yoContract.serialize(text);
+  // Add a Module
+  const tx = await yContract.removeModule("0xCC4411174928e021dD6306032FAd7B58b260ECf4");
+  await tx.wait();
 
-  // // Pass the bytes to the Y contract yeet function
-  // const yeetTx = await yContract.yeet(yoContract.target, data);
-  // await yeetTx.wait();
+  // // // Use the text "hello there" in the serialize function to create bytes
+  // // // const text = "hello there";
+  // // const text =
+  // //   'Satoshi Nakamoto\'s development of Bitcoin in 2009 has often been hailed as a radical development in money and currency, being the first example of a digital asset which simultaneously has no backing or "intrinsic value" and no centralized issuer or controller. However, another, a';
+  // // const data = await yoContract.serialize(text);
 
-  // // wait a few more seconds to ensure the events are indexed
-  // await new Promise((resolve) => setTimeout(resolve, 5000));
+  // // // Pass the bytes to the Y contract yeet function
+  // // const yeetTx = await yContract.yeet(yoContract.target, data);
+  // // await yeetTx.wait();
 
-  // The contract will emit an event when the yo is yeeted
-  // We can get the event logs with the `getFilter` method
-  const filter = yContract.filters.Yeeted(yContract.target);
-  const logs = await yContract.queryFilter(filter);
-  console.log("logs", logs);
+  // // // wait a few more seconds to ensure the events are indexed
+  // // await new Promise((resolve) => setTimeout(resolve, 5000));
 
-  // deserialize the event data
-  const eventData = logs[0].args?.data;
-  const eventText = await yoContract.deserialize(eventData);
-  console.log("eventText", eventText.text);
-  const eventTimestamp = logs[0].args?.timestamp;
-  console.log("eventTimestamp", eventTimestamp);
+  // // The contract will emit an event when the yo is yeeted
+  // // We can get the event logs with the `getFilter` method
+  // const filter = yContract.filters.Yeeted(yContract.target);
+  // const logs = await yContract.queryFilter(filter);
+  // console.log("logs", logs);
 
-  // check that the event data matches the stored data
-  const ref = logs[0].args?.ref;
-  console.log("ref", ref);
-  const ySavedData = await yContract.me(ref, eventTimestamp);
-  const ySavedYeet = await yoContract.deserialize(ySavedData);
-  console.log(
-    "yContract ySavedYeet account, timestamp, text",
-    ySavedYeet.account,
-    ySavedYeet.timestamp,
-    ySavedYeet.text,
-  );
+  // // deserialize the event data
+  // const eventData = logs[0].args?.data;
+  // const eventText = await yoContract.deserialize(eventData);
+  // console.log("eventText", eventText.text);
+  // const eventTimestamp = logs[0].args?.timestamp;
+  // console.log("eventTimestamp", eventTimestamp);
 
-  // check that the yeetstamp count has increased
-  const yeetstamps2 = await yContract.getYeetstamps(yoContract.target.toString());
-  console.log("yeetstamps2", yeetstamps2);
-  const yeetstampCount2 = yeetstamps2.length;
-  console.log("yeetstampCount2", yeetstampCount2);
+  // // check that the event data matches the stored data
+  // const ref = logs[0].args?.ref;
+  // console.log("ref", ref);
+  // const ySavedData = await yContract.me(ref, eventTimestamp);
+  // const ySavedYeet = await yoContract.deserialize(ySavedData);
+  // console.log(
+  //   "yContract ySavedYeet account, timestamp, text",
+  //   ySavedYeet.account,
+  //   ySavedYeet.timestamp,
+  //   ySavedYeet.text,
+  // );
 
-  // check that the yeet for this account has been saved
-  const yeet = await yoContract.getYeet(yContract.target, eventTimestamp);
-  console.log("yeet", yeet);
+  // // check that the yeetstamp count has increased
+  // const yeetstamps2 = await yContract.getYeetstamps(yoContract.target.toString());
+  // console.log("yeetstamps2", yeetstamps2);
+  // const yeetstampCount2 = yeetstamps2.length;
+  // console.log("yeetstampCount2", yeetstampCount2);
 
-  // check that the timestamp is in the list of timestamps
-  const _timestamps = await yoContract.getTimestamps();
-  console.log("timestamps", _timestamps);
+  // // check that the yeet for this account has been saved
+  // const yeet = await yoContract.getYeet(yContract.target, eventTimestamp);
+  // console.log("yeet", yeet);
 
-  // read the Y contract data from the Yo contract
-  const result = await yoContract.read(yContract.target, eventTimestamp);
-  console.log("result", result);
+  // // check that the timestamp is in the list of timestamps
+  // const _timestamps = await yoContract.getTimestamps();
+  // console.log("timestamps", _timestamps);
 
-  // HTML
-  const timestamps2 = await yoContract.getTimestamps();
-  if (timestamps2.length === 0) {
-    return;
-  }
-  const yeetHtml = await yoContract.getHtml(yContract.target, timestamps2[0]);
-  console.log("yeetHtml", yeetHtml);
+  // // read the Y contract data from the Yo contract
+  // const result = await yoContract.read(yContract.target, eventTimestamp);
+  // console.log("result", result);
 
-  const earliestTimestamp = 0;
-  const htmlFeed = await yoContract.home(earliestTimestamp);
-  console.log("htmlFeed", htmlFeed);
+  // // HTML
+  // const timestamps2 = await yoContract.getTimestamps();
+  // if (timestamps2.length === 0) {
+  //   return;
+  // }
+  // const yeetHtml = await yoContract.getHtml(yContract.target, timestamps2[0]);
+  // console.log("yeetHtml", yeetHtml);
+
+  // const earliestTimestamp = 0;
+  // const htmlFeed = await yoContract.home(earliestTimestamp);
+  // console.log("htmlFeed", htmlFeed);
 
   // Check modules
-  const modules = await yContract.getModules();
+  modules = await yContract.getModules();
   console.log("modules", modules);
 }
 
