@@ -13,7 +13,7 @@ contract Y is IY {
 // |--------------------------- REQUIRED storage ORDER ---------------------------|
 // |                                                                              |
     
-    // KEEP AT THE TOP OF THE Y ACCOUNT CONTRACT
+    // KEEP AT THE TOP OF THE Y CONTRACT
     // DO NOT CHANGE THE ORDER OF THESE VARIABLES
     // OTHERWISE MODULE STORAGE SLOTS WILL NOT MATCH
     // Module: e.g. Yo Contract
@@ -43,7 +43,7 @@ contract Y is IY {
     // the modules in the order to display
     address[] public modules;
 
-    // the owners that can modify the account
+    // the owners that can modify protected data
     address[] public owners;
 
     constructor(address owner) {
@@ -51,7 +51,7 @@ contract Y is IY {
     }
 
     // the Y contract needs to be able to receive ether
-    // so that it can act as an account for the user
+    // so that it can act as an account for the user, if desired
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
 
@@ -72,8 +72,7 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the yeetstamps (timestamps) for a given module for this account
-     * @dev Retrieves the array of timestamps for an account and module combination
+     * @notice Returns the yeetstamps (timestamps) for a given module for this Y
      * @param module The address of the module
      * @return An array of timestamps
      */
@@ -82,12 +81,12 @@ contract Y is IY {
     }
 
     /**
-     * ACCOUNT INFO
+     * PROFILE INFO
      */
 
     /**
-     * @notice Returns the username for the account
-     * @dev Anyone can retrieve the username for the account
+     * @notice Returns the username for the profile
+     * @dev Anyone can retrieve the username for the profile
      * @return The username
      */
     function username() public view virtual returns (string memory) {
@@ -95,8 +94,8 @@ contract Y is IY {
     }
 
     /**
-     * @notice Sets the username for the account
-     * @dev Allows the owner to set a username for their account
+     * @notice Sets the username for the profile
+     * @dev Allows the owner to set a username for their profile
      * @param _newUsername The desired username
      */
     function setUsername(string memory _newUsername) public onlyOwner {
@@ -104,8 +103,8 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the bio for the account
-     * @dev Anyone can retrieve the bio for the account
+     * @notice Returns the bio for the profile
+     * @dev Anyone can retrieve the bio for the profile
      * @return The bio
      */
     function bio() public view virtual returns (string memory) {
@@ -113,8 +112,8 @@ contract Y is IY {
     }
 
     /**
-     * @notice Sets the bio for the account
-     * @dev Allows the owner to set a bio for their account
+     * @notice Sets the bio for the profile
+     * @dev Allows the owner to set a bio for their profile
      * @param _newBio The desired bio
      */
     function setBio(string memory _newBio) public onlyOwner {
@@ -122,8 +121,8 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the avatar for the account
-     * @dev Anyone can retrieve the avatar for the account
+     * @notice Returns the avatar for the profile
+     * @dev Anyone can retrieve the avatar for the profile
      * @return The avatar hash
      */
     function avatar() public view virtual returns (string memory) {
@@ -131,8 +130,8 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the avatar for the account
-     * @dev Anyone can retrieve the avatar for the account
+     * @notice Returns the avatar for the profile
+     * @dev Anyone can retrieve the avatar for the profile
      * @return The avatar
      */
      function avatarURI() public view virtual returns (string memory) {
@@ -151,8 +150,8 @@ contract Y is IY {
     }
 
     // /**
-    //  * @notice Sets the avatar for the account
-    //  * @dev Allows the owner to set the avatar for their account
+    //  * @notice Sets the avatar for the profile
+    //  * @dev Allows the owner to set the avatar for their profile
     //  * @param _newAvatarIpfsHash The desired avatar IPFS hash
     //  */
     // function setAvatar(string memory _newAvatarIpfsHash) public onlyOwner {
@@ -160,8 +159,8 @@ contract Y is IY {
     // }
 
     /**
-     * @notice Sets the avatar for the account
-     * @dev Allows the owner to set the avatar for their account as an NFT they own
+     * @notice Sets the avatar for the profile
+     * @dev Allows the owner to set the avatar for their profile as an NFT they own
      * @param nftContract The address of the NFT contract
      * @param tokenId The ID of the NFT
      */
@@ -180,7 +179,7 @@ contract Y is IY {
 
     /**
      * @notice Returns the list of modules
-     * @dev Retrieves the array of added modules for this account
+     * @dev Retrieves the array of added modules for this Y
      * @return An array of module addresses
      */
     function getModules() public view returns (address[] memory) {
@@ -253,16 +252,16 @@ contract Y is IY {
     */
 
     /**
-     * @notice Returns the latest content from a module for a specific account
+     * @notice Returns the latest content from a module for a specific Y
      * @param module The address of the module to retrieve content from
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account
+     * @return The latest content for a Y
      */
     function recentBytes(
         address module,
         uint256 earliest
     ) public view returns (bytes[] memory) {
-        // Get all the timestamps for the account for this module
+        // Get all the timestamps for the Y for the passed module
         uint256[] memory timestamps = getYeetstamps(module);
         if (timestamps.length == 0) {
             return new bytes[](0);
@@ -291,10 +290,10 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the latest content from a module for a specific account in JSON format
+     * @notice Returns the latest content from a module for a specific Y in JSON format
      * @param module The address of the module to retrieve content from
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account in JSON format
+     * @return The latest content in JSON format
      */
     function recentJson(
         address module,
@@ -312,16 +311,16 @@ contract Y is IY {
     */
 
     /**
-     * @notice Returns the latest content in html format from a module for a specific account
+     * @notice Returns the latest content in html format from a module for a specific Y
      * @param module The address of the module to retrieve content from
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account in html format
+     * @return The latest content in html format
      */
     function wall(
         address module,
         uint256 earliest
     ) public view returns (string memory) {
-        // Get all the timestamps for the account for this module
+        // Get all the timestamps for the Y for the passed module
         uint256[] memory timestamps = getYeetstamps(module);
         if (timestamps.length == 0) {
             return "";
@@ -350,9 +349,9 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the latest content from all modules for a specific account
+     * @notice Returns the latest content from all modules for a specific Y
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account from all modules in html format
+     * @return The latest content from all modules in html format
      */
     function walls(uint256 earliest) public view returns (string memory) {
         string memory html = "";
@@ -376,7 +375,7 @@ contract Y is IY {
     }
 
     function _onlyOwner() internal view {
-        //directly from an EOA owner, or through the account itself (which gets redirected through execute())
+        //directly from an EOA owner, or through the Y itself (which gets redirected through execute())
         bool _isOwner = false;
         for (uint i = 0; i < owners.length; i++) {
             if (msg.sender == owners[i]) {

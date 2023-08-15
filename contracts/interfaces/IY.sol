@@ -5,7 +5,7 @@ interface IY {
     event ModuleAdded(address indexed module);
     event ModuleRemoved(address indexed module);
     event ModuleInserted(address indexed module, uint256 index);
-    event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
+    event Yeeted(address indexed y, address indexed ref, uint256 indexed timestamp, bytes data);
 
     /**
      * @notice Allows a module to yeet data
@@ -35,10 +35,10 @@ interface IY {
     function removeModule(address module) external;
 
     /**
-     * @notice Returns the latest content from a module for a specific account
+     * @notice Returns the latest content from a module for a specific Y contract
      * @param module The address of the module to retrieve content from
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account
+     * @return The latest content for a Y contract
      */
     function recentBytes(
         address module,
@@ -46,10 +46,10 @@ interface IY {
     ) external view returns (bytes[] memory);
 
     /**
-     * @notice Returns the latest content from a module for a specific account in JSON format
+     * @notice Returns the latest content from a module for a specific Y contract in JSON format
      * @param module The address of the module to retrieve content from
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account in JSON format
+     * @return The latest content for a Y contract in JSON format
      */
     function recentJson(
         address module,
@@ -57,10 +57,10 @@ interface IY {
     ) external view returns (string memory);
 
     /**
-     * @notice Returns the latest content in html format from a module for a specific account
+     * @notice Returns the latest content in html format from a module for a specific Y contract
      * @param module The address of the module to retrieve content from
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account in html format
+     * @return The latest content for a Y contract in html format
      */
     function wall(
         address module,
@@ -68,9 +68,9 @@ interface IY {
     ) external view returns (string memory);
 
     /**
-     * @notice Returns the latest content from all modules for a specific account
+     * @notice Returns the latest content from all modules for a specific Y contract
      * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for an account from all modules in html format
+     * @return The latest content for a Y contract from all modules in html format
      */
     function walls(uint256 earliest) external view returns (string memory);
 

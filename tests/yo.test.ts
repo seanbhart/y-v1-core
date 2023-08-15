@@ -66,12 +66,7 @@ describe("Yo Contract", function () {
       expect(ref).to.equal(yoContract.target);
       const ySavedData = await yContract.me(ref, eventTimestamp);
       const ySavedYeet = await yoContract.deserialize(ySavedData);
-      console.log(
-        "yContract ySavedYeet account, timestamp, text",
-        ySavedYeet.account,
-        ySavedYeet.timestamp,
-        ySavedYeet.text,
-      );
+      console.log("yContract ySavedYeet y, timestamp, text", ySavedYeet.y, ySavedYeet.timestamp, ySavedYeet.text);
       expect(ySavedYeet.text).to.equal(eventText.text);
 
       // check that the yeetstamp count has increased
@@ -81,7 +76,7 @@ describe("Yo Contract", function () {
       console.log("yeetstampCount2", yeetstampCount2);
       expect(yeetstampCount2).to.equal(yeetstampCount + 1);
 
-      // check that the yeet for this account has been saved
+      // check that the yeet for this Y contract has been saved
       const yeet = await yoContract.getYeet(yContract.target, eventTimestamp);
       console.log("yeet", yeet);
       expect(yeet.text).to.not.be.undefined;

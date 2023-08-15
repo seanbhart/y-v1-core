@@ -2,7 +2,7 @@
 pragma solidity >=0.8.4;
 
 struct Yeet {
-    address account;
+    address y;
     string username;
     string avatar;
     uint256 timestamp;
@@ -17,7 +17,7 @@ struct Yeet {
  * regardless of the type of content the module manages (text, photo, etc.)
  */
 interface IYo {
-    event Yeeted(address indexed account, address indexed ref, uint256 indexed timestamp, bytes data);
+    event Yeeted(address indexed y, address indexed ref, uint256 indexed timestamp, bytes data);
 
     /**
      * @notice Serializes a text string into bytes
@@ -36,7 +36,7 @@ interface IYo {
     /**
      * @notice Allows a user to write a Yo
      * @dev This function should be called by the Y contract via delegatecall so that
-     * the data is stored in the Y contract, associated with the user account
+     * the data is stored in the Y contract associated with the caller
      * @param ref The address to reference
      * @param _data The data to be stored
      * @return The updated bytes of the Yeet struct

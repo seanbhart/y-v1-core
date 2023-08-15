@@ -12,9 +12,9 @@ import { Y } from "./Y.sol";
 /**
  * @title Yo Contract
  * @dev This contract allows users to write and read text social posts (Yos) 
- * associated with their account address and a timestamp
+ * associated with their Y address and a timestamp
  * Yo data is stored in the Y contract, and the Yo contract is a module of the Y contract
- * The Y contract is an account contract that serves as the identity of the user
+ * The Y contract is an account / profile contract that serves as the identity of the user
  */
  contract Yo is IYo {
 
@@ -45,7 +45,7 @@ import { Y } from "./Y.sol";
     uint256[] public timestamps;
     string public name = "Yo";
 
-    event Saved(address indexed account, uint256 indexed timestamp, Yeet data);
+    event Saved(address indexed y, uint256 indexed timestamp, Yeet data);
 
     constructor() {
         console.log("Deploying a Yo contract");
@@ -62,10 +62,10 @@ import { Y } from "./Y.sol";
      * @return _yeet The converted Yeet struct
      */
     function serialize(string memory _text) public pure returns (bytes memory) {
-        // the account will be set to the zero address
+        // the y will be set to the zero address
         // and the timestamp will be set to zero
         // but both will be set in the yeet function to ensure
-        // the data is accurately associated with the user account and the block timestamp
+        // the data is accurately associated with the Y contract and the block timestamp
         Yeet memory _yeet = Yeet(address(0), "", "", 0, _text);
         return abi.encode(_yeet);
     }
@@ -82,28 +82,28 @@ import { Y } from "./Y.sol";
     /**
      * @notice Allows a user to write a Yo
      * @dev This function should be called by the Y contract via delegatecall so that
-     * the data is stored in the Y contract, associated with the user account
+     * the data is stored in the Y contract, associated with the caller
      * @param ref The address to reference
      * @param _data The data to be stored
      * @return The updated bytes of the Yeet struct
      */
     function yeet(address ref, bytes memory _data) public returns (Yeet memory) {
         // the address is the calling contract via delegatecall, so it is address(this)
-        address account = address(this);
+        address y = address(this);
         uint256 timestamp = block.timestamp;
         // deserialize the data into a Yeet struct
-        // so that the account info and timestamp can be set
+        // so that the Y contract info and timestamp can be set
         Yeet memory deserializedYeet = deserialize(_data);
-        deserializedYeet.account = account;
+        deserializedYeet.y = y;
         deserializedYeet.username = _username;
         deserializedYeet.avatar = _avatar;
         deserializedYeet.timestamp = timestamp;
         _data = abi.encode(deserializedYeet);
         me[ref][timestamp] = _data;
         yeetstamps[ref].push(timestamp);
-        // Use the calling account in the event data so that the
-        // account is the one who is indexed in the log as the creator
-        emit Yeeted(account, ref, timestamp, _data);
+        // Use the Y contract in the event data so that the
+        // Y is indexed in the log as the creator
+        emit Yeeted(y, ref, timestamp, _data);
         return deserializedYeet;
     }
 
@@ -119,7 +119,7 @@ import { Y } from "./Y.sol";
         // The yeet should already have the data set before save is called
         yeets[deserializedYeet.timestamp].push(deserializedYeet);
         timestamps.push(deserializedYeet.timestamp);
-        emit Saved(deserializedYeet.account, deserializedYeet.timestamp, deserializedYeet);
+        emit Saved(deserializedYeet.y, deserializedYeet.timestamp, deserializedYeet);
         return (_data);
     }
 
@@ -144,7 +144,7 @@ import { Y } from "./Y.sol";
         Yeet memory _yeet = abi.decode(_data, (Yeet));
         _json = string(abi.encodePacked(
             "{",
-            "\"account\":\"", Strings.toHexString(uint256(uint160(_yeet.account))), "\",",
+            "\"y\":\"", Strings.toHexString(uint256(uint160(_yeet.y))), "\",",
             "\"username\":\"", _yeet.username, "\",",
             "\"avatar\":\"", _yeet.avatar, "\",",
             "\"timestamp\":", Strings.toString(_yeet.timestamp), ",",
@@ -178,7 +178,7 @@ import { Y } from "./Y.sol";
      */
     function html(bytes memory _yt) public pure returns (string memory) {
         Yeet memory yt = deserialize(_yt);
-        // string memory addressString = string(abi.encodePacked("0x", Strings.toHexString(yt.account)));
+        // string memory addressString = string(abi.encodePacked("0x", Strings.toHexString(yt.y)));
         /* solhint-disable max-line-length */
         return string(abi.encodePacked(
             "<div style=\"width: 360px; margin-top: 10px; margin-bottom: 10px; padding: 10px; font-family: Lucida Sans, sans-serif; display: flex; background-color: #111;\">",
@@ -186,15 +186,15 @@ import { Y } from "./Y.sol";
                     "<img src=\"",
                     yt.avatar,
                     "\" alt=\"avatar\" style=\"width: 64px; height: 64px; box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);\"/>",
-                    "<div id=\"yeet-account\" style=\"color: #666; font-size: 12px; margin-top: 8px; width: 64px; display: flex; justify-content: space-between; overflow: hidden;\">",
+                    "<div id=\"yeet-y\" style=\"color: #666; font-size: 12px; margin-top: 8px; width: 64px; display: flex; justify-content: space-between; overflow: hidden;\">",
                         "<div style=\"white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: left; width: 26px;\">",
-                            Strings.toHexString(yt.account),
+                            Strings.toHexString(yt.y),
                         "</div>",
                         "<div style=\"white-space: nowrap; overflow: show; font-size: 12px\">",
                             "...",
                         "</div>",
                         "<div style=\"white-space: nowrap; overflow: hidden; text-overflow: clip; text-align: right; direction: rtl; width: 28px;\">",
-                            Strings.toHexString(yt.account),
+                            Strings.toHexString(yt.y),
                         "</div>",
                     "</div>",
                 "</div>",
@@ -292,7 +292,7 @@ import { Y } from "./Y.sol";
      */
     function yeetize(string memory _text) public pure returns (Yeet memory _yeet) {
         return Yeet({
-            account: address(0),
+            y: address(0),
             username: "",
             avatar: "",
             timestamp: 0,
@@ -302,14 +302,14 @@ import { Y } from "./Y.sol";
 
     /**
      * @dev Returns the Yeet struct for a given user and timestamp
-     * @param account The address of the user
+     * @param y The address of the Y contract
      * @param timestamp The timestamp of the yeet
      * @return The Yeet struct
      */
-    function getYeet(address account, uint256 timestamp) public view returns (Yeet memory) {
+    function getYeet(address y, uint256 timestamp) public view returns (Yeet memory) {
         Yeet[] memory _yeets = yeets[timestamp];
         for (uint256 i = 0; i < _yeets.length; i++) {
-            if (_yeets[i].account == account) {
+            if (_yeets[i].y == y) {
                 return _yeets[i];
             }
         }
@@ -320,12 +320,12 @@ import { Y } from "./Y.sol";
      * @notice Returns potential HTML for a yeet
      * @dev This allows the Yo contract to display the data in HTML format
      * in an easily embeddable way so that it can be displayed on a website
-     * @param account The address of the user
+     * @param y The address of the user
      * @param timestamp The timestamp of the yeet
      * @return The string HTML of the yeet
      */
-    function getHtml(address account, uint256 timestamp) public view returns (string memory) {
-        Yeet memory _yeet = getYeet(account, timestamp);
+    function getHtml(address y, uint256 timestamp) public view returns (string memory) {
+        Yeet memory _yeet = getYeet(y, timestamp);
         return html(abi.encode(_yeet));
     }
 

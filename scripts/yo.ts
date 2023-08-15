@@ -65,8 +65,8 @@ async function main() {
   // const ySavedData = await yContract.me(ref, eventTimestamp);
   // const ySavedYeet = await yoContract.deserialize(ySavedData);
   // console.log(
-  //   "yContract ySavedYeet account, timestamp, text",
-  //   ySavedYeet.account,
+  //   "yContract ySavedYeet y, timestamp, text",
+  //   ySavedYeet.y,
   //   ySavedYeet.timestamp,
   //   ySavedYeet.text,
   // );
@@ -77,7 +77,7 @@ async function main() {
   // const yeetstampCount2 = yeetstamps2.length;
   // console.log("yeetstampCount2", yeetstampCount2);
 
-  // // check that the yeet for this account has been saved
+  // // check that the yeet for this Y contract has been saved
   // const yeet = await yoContract.getYeet(yContract.target, eventTimestamp);
   // console.log("yeet", yeet);
 

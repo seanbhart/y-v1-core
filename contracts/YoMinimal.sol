@@ -11,9 +11,9 @@ import { Y } from "./Y.sol";
 /**
  * @title Yo Contract
  * @dev This contract allows users to write and read text social posts (Yos) 
- * associated with their account address and a timestamp
+ * associated with their Y address and a timestamp
  * Yo data is stored in the Y contract, and the Yo contract is a module of the Y contract
- * The Y contract is an account contract that serves as the identity of the user
+ * The Y contract is an account / profile contract that serves as the identity of the user
  */
  contract YoMinimal is IYo {
 
@@ -50,10 +50,10 @@ import { Y } from "./Y.sol";
      * @return _yeet The converted Yeet struct
      */
     function serialize(string memory _text) public pure returns (bytes memory) {
-        // the account will be set to the zero address
+        // the y will be set to the zero address
         // and the timestamp will be set to zero
         // but both will be set in the yeet function to ensure
-        // the data is accurately associated with the user account and the block timestamp
+        // the data is accurately associated with the Y contract and the block timestamp
         Yeet memory _yeet = Yeet(address(0), "", "", 0, _text);
         return abi.encode(_yeet);
     }
@@ -70,28 +70,28 @@ import { Y } from "./Y.sol";
     /**
      * @notice Allows a user to write a Yo
      * @dev This function should be called by the Y contract via delegatecall so that
-     * the data is stored in the Y contract, associated with the user account
+     * the data is stored in the Y contract
      * @param ref The address to reference
      * @param _data The data to be stored
      * @return The updated bytes of the Yeet struct
      */
     function yeet(address ref, bytes memory _data) public returns (Yeet memory) {
         // the address is the calling contract via delegatecall, so it is address(this)
-        address account = address(this);
+        address y = address(this);
         uint256 timestamp = block.timestamp;
         // deserialize the data into a Yeet struct
-        // so that the account info and timestamp can be set
+        // so that the Y contract info and timestamp can be set
         Yeet memory deserializedYeet = deserialize(_data);
-        deserializedYeet.account = account;
+        deserializedYeet.y = y;
         deserializedYeet.username = _username;
         deserializedYeet.avatar = _avatar;
         deserializedYeet.timestamp = timestamp;
         _data = abi.encode(deserializedYeet);
         me[ref][timestamp] = _data;
         yeetstamps[ref].push(timestamp);
-        // Use the calling account in the event data so that the
-        // account is the one who is indexed in the log as the creator
-        emit Yeeted(account, ref, timestamp, _data);
+        // Use the calling Y in the event data so that the
+        // Y contract is the one who is indexed in the log as the creator
+        emit Yeeted(y, ref, timestamp, _data);
         return deserializedYeet;
     }
 
@@ -127,7 +127,7 @@ import { Y } from "./Y.sol";
         Yeet memory _yeet = abi.decode(_data, (Yeet));
         _json = string(abi.encodePacked(
             "{",
-            "\"account\":\"", Strings.toHexString(uint256(uint160(_yeet.account))), "\",",
+            "\"y\":\"", Strings.toHexString(uint256(uint160(_yeet.y))), "\",",
             "\"username\":\"", _yeet.username, "\",",
             "\"avatar\":\"", _yeet.avatar, "\",",
             "\"timestamp\":", Strings.toString(_yeet.timestamp), ",",

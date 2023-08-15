@@ -6,12 +6,13 @@ Y World Computer Open Social Standard
 
 Yeets are social actions. All actions are Yeets.
 
-Yeets always save data to Y contracts (accounts). Normal Yeeting uses a "yeet" function. Yo contracts must also have a
-"save" function that will be called by the Y contract to allow the Yo module to save data internally if needed.
+Yeets always save data to Y contracts (accounts / profiles). Normal Yeeting uses a "yeet" function. Yo contracts must
+also have a "save" function that will be called by the Y contract to allow the Yo module to save data internally if
+needed.
 
 ### Y Social Component Ideas
 
-- **Y.sol** / **Yme.sol** - A generalized account contract
+- **Y.sol** / **Yme.sol** - A generalized account / profile contract
 - **Yo.sol** - A generalized short-form text yeet contract
 - **Ya.sol** - A generalized short-form text reyeet contract (for any yeet type)
 - **Yot.sol** - A generalized emoji reaction contract (for any yeet type)

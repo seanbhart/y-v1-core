@@ -71,7 +71,7 @@ describe("Y Contract - HTML", function () {
       expect(result.length).to.equal(2);
     });
 
-    it("Should retrieve the latest content from a module for a specific account", async function () {
+    it("Should retrieve the latest content from a module for a specific Y contract", async function () {
       // Call the wall function to get a specific user content from a single module
       const result = await yContract.wall(yoContract.target, 0);
       expect(result).to.equal(
@@ -79,7 +79,7 @@ describe("Y Contract - HTML", function () {
       );
     });
 
-    it("Should retrieve the latest content from all modules for a specific account", async function () {
+    it("Should retrieve the latest content from all modules for a specific Y contract", async function () {
       // Call the walls function to get all content for a specific user
       const result = await yContract.walls(0);
       expect(result).to.equal(

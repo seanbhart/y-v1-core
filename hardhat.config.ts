@@ -129,14 +129,6 @@ const config: HardhatUserConfig = {
         url: `${process.env.NETWORK_FORK}`,
       },
     },
-    kovan: {
-      url: `${process.env.NETWORK_KOVAN}`,
-      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_KOVAN}`],
-      // gas: 12000000,
-      // blockGasLimit: 0x1fffffffffffff,
-      // allowUnlimitedContractSize: true,
-      // timeout: 1800000,
-    },
     polygon: {
       url: `${process.env.NETWORK_POLYGON}`,
       accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_ACCT3}`],
@@ -149,7 +141,7 @@ const config: HardhatUserConfig = {
     },
     "optimism-goerli": {
       url: `${process.env.NETWORK_OPTIMISM_GOERLI}`,
-      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_ACCT3}`],
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_DEV04}`],
       gasPrice: 1000000000, // 1 Gwei
     },
     "zk-evm": {
