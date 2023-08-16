@@ -2,21 +2,21 @@ import { ethers as hhethers } from "hardhat";
 
 import { Y, Y__factory, Yo, Yo__factory } from "../types";
 
-const Y_CONTRACT_ADDRESS = process.env.Y_CONTRACT_ADDRESS_OPTIMISM;
-const YO_CONTRACT_ADDRESS = process.env.YO_CONTRACT_ADDRESS_OPTIMISM;
+const Y_ADDRESS = process.env.Y_ADDRESS_OPTIMISM;
+const YO_ADDRESS = process.env.YO_ADDRESS_OPTIMISM;
 const devKey = process.env.ACCOUNT_KEY_PRIV_DEV04;
 
 async function main() {
-  if (!Y_CONTRACT_ADDRESS || !YO_CONTRACT_ADDRESS || !devKey) {
+  if (!Y_ADDRESS || !YO_ADDRESS || !devKey) {
     return;
   }
-  console.log("Y_CONTRACT_ADDRESS", Y_CONTRACT_ADDRESS);
-  console.log("YO_CONTRACT_ADDRESS", YO_CONTRACT_ADDRESS);
+  console.log("Y_ADDRESS", Y_ADDRESS);
+  console.log("YO_ADDRESS", YO_ADDRESS);
 
   const YFactory = (await hhethers.getContractFactory("Y")) as Y__factory;
   const YoFactory = (await hhethers.getContractFactory("Yo")) as Yo__factory;
-  const yContract = YFactory.attach(Y_CONTRACT_ADDRESS) as Y;
-  const yoContract = YoFactory.attach(YO_CONTRACT_ADDRESS) as Yo;
+  const yContract = YFactory.attach(Y_ADDRESS) as Y;
+  const yoContract = YoFactory.attach(YO_ADDRESS) as Yo;
 
   // Check the contract using a read function
   const wallet = new hhethers.Wallet(devKey, hhethers.provider);

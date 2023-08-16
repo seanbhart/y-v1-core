@@ -1,4 +1,5 @@
 import "@nomicfoundation/hardhat-toolbox";
+// import "@nomiclabs/hardhat-ethers";
 import { config as dotenvConfig } from "dotenv";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
@@ -87,9 +88,9 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    token: "ETH",
+    token: "MATIC",
     currency: "USD",
-    gasPrice: 1, // 1 Gwei is the lowest possible setting - L2s are lower in reality
+    gasPrice: 50, // 1 Gwei is the lowest possible setting - L2s are lower in reality
     coinmarketcap: `${process.env.COIN_MARKET_CAP}`,
     enabled: process.env.REPORT_GAS ? true : false,
     excludeContracts: [],
@@ -131,8 +132,8 @@ const config: HardhatUserConfig = {
     },
     polygon: {
       url: `${process.env.NETWORK_POLYGON}`,
-      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_ACCT3}`],
-      // gasPrice: 150000000000, // 150 Gwei
+      accounts: [`0x${process.env.ACCOUNT_KEY_PRIV_DEV04}`],
+      gasPrice: 150000000000, // 150 Gwei
     },
     optimism: {
       url: `${process.env.NETWORK_OPTIMISM}`,
