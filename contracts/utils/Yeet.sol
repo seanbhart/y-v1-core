@@ -2,8 +2,8 @@
 pragma solidity >=0.8.4;
 
 import { console } from "hardhat/console.sol";
-import { Yeet as YoYeet } from "./interfaces/IYo.sol";
-import { Yo } from "./Yo.sol";
+import { Yeet as YoYeet } from "../interfaces/stored/IYo.sol";
+import { Yo } from "../stored/Yo.sol";
 
 /**
  * @title Yeet Contract

@@ -3,7 +3,11 @@ import { expect } from "chai";
 import ethers from "ethers";
 import { ethers as hhethers } from "hardhat";
 
-import { Y, YFactory, YFactory__factory, Y__factory } from "../types";
+import YArtifact from "../../artifacts/contracts/logged/Y.sol/Y.json";
+import { Y } from "../../types/contracts/logged";
+import { YFactory } from "../../types/contracts/logged";
+import { Y__factory } from "../../types/factories/contracts/logged";
+import { YFactory__factory } from "../../types/factories/contracts/logged";
 
 const devKey = process.env.ACCOUNT_KEY_PRIV_DEV01;
 
@@ -30,7 +34,10 @@ describe("YFactory Contract", function () {
 
   it("Should create a new Y contract", async function () {
     const tx = await yFactory.create();
-    await tx.wait();
+    const receipt = await tx.wait();
+    if (!receipt) {
+      throw new Error("No receipt");
+    }
 
     // check for stored created contracts
     const yContracts = await yFactory.getMy();
@@ -45,7 +52,7 @@ describe("YFactory Contract", function () {
     console.log("newYAddress", newYAddress);
     expect(newYAddress).to.exist;
 
-    const YFactory = (await hhethers.getContractFactory("Y")) as Y__factory;
+    const YFactory = new hhethers.ContractFactory(YArtifact.abi, YArtifact.bytecode) as Y__factory;
     const newYContract = YFactory.attach(newYAddress) as Y;
     expect(newYContract).to.exist;
   });

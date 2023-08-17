@@ -2,7 +2,10 @@ import { expect } from "chai";
 import ethers from "ethers";
 import { ethers as hhethers } from "hardhat";
 
-import { Y, Y__factory, Yo, Yo__factory } from "../types";
+import { Y } from "../../types/contracts/stored";
+import { Yo } from "../../types/contracts/stored";
+import { Y__factory } from "../../types/factories/contracts/stored";
+import { Yo__factory } from "../../types/factories/contracts/stored";
 
 const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
 
@@ -43,7 +46,10 @@ describe("Yo Contract", function () {
       // const yeet = await yoContract.yeetize(text);
       const data = await yoContract.serialize(text);
       const tx = await yContract.yeet(yoContract.target, data);
-      await tx.wait();
+      const receipt = await tx.wait();
+      if (!receipt) {
+        throw new Error("No receipt");
+      }
 
       // The contract will emit an event when the yo is yeeted
       // We can get the event logs with the `getFilter` method

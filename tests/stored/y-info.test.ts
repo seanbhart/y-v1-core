@@ -2,8 +2,10 @@ import { assert, expect } from "chai";
 import ethers from "ethers";
 import { ethers as hhethers } from "hardhat";
 
-// import { Y, Y__factory } from "../types";
-import { Mock, Mock__factory, Y, Y__factory } from "../types";
+import { Y } from "../../types/contracts/stored";
+import { Mock } from "../../types/contracts/utils";
+import { Y__factory } from "../../types/factories/contracts/stored";
+import { Mock__factory } from "../../types/factories/contracts/utils";
 
 const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
 const devKey2 = process.env.ACCOUNT_KEY_PRIV_ACCT2;

@@ -17,7 +17,10 @@ async function main() {
 
   // Create a new Y contract
   const tx = await yFactory.create();
-  await tx.wait();
+  const receipt = await tx.wait();
+  if (!receipt) {
+    throw new Error("No receipt");
+  }
 
   // check for stored created contracts
   const yContracts = await yFactory.getMy();

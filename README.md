@@ -132,6 +132,12 @@ $ hh deploy --network optimism-goerli
 $ hh deploy --network optimism-goerli --tags Yo
 ```
 
+### Test
+
+```sh
+$ hh test ./tests/stored/Y.test.ts
+```
+
 ### Run Scripts
 
 Run scripts like `scripts/sample-script.ts`:

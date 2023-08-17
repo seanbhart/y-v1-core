@@ -4,8 +4,8 @@ pragma solidity >=0.8.4;
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC721Metadata } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import { console } from "hardhat/console.sol";
-import { IYo } from "./interfaces/IYo.sol";
-import { IY } from "./interfaces/IY.sol";
+import { IYo } from "../interfaces/logged/IYo.sol";
+import { IY } from "../interfaces/logged/IY.sol";
 
 contract Y is IY {
 
@@ -18,14 +18,9 @@ contract Y is IY {
     // OTHERWISE MODULE STORAGE SLOTS WILL NOT MATCH
     // Module: e.g. Yo Contract
 
-    // the "me" mapping stores the saved data from module activity
-    // the address is the MODULE address, the string is the data struct name,
-    // the uint256 is the timestamp, and the bytes is the data struct
-    mapping(address => mapping(uint256 => bytes)) public me;
-    // a list of all the timestamps for a user's yeets
-    // the logic follows the "me" mapping - address is the MODULE address
-    mapping(address => uint256[]) public yeetstamps;
-    // The avatar is a string that represents the IPFS hash of the user's avatar
+    // hashes always include the block as the first value hashed,
+    // followed by the data components in the order of their struct
+    mapping(bytes32 => bool) public yeets;
     string private _avatar;
     string private _username;
 
@@ -72,12 +67,12 @@ contract Y is IY {
     }
 
     /**
-     * @notice Returns the yeetstamps (timestamps) for a given module for this Y
-     * @param module The address of the module
-     * @return An array of timestamps
+     * @notice Checks if a yeet with a given hash exists
+     * @param _hash The hash of the yeet to be checked
+     * @return A boolean indicating if the yeet hash exists
      */
-    function getYeetstamps(address module) public view returns (uint256[] memory) {
-        return yeetstamps[module];
+    function find(bytes32 _hash) public view returns (bool) {
+        return yeets[_hash];
     }
 
     /**
@@ -173,6 +168,7 @@ contract Y is IY {
         _avatar = tokenURI;
     }
 
+
     /**
      * MODULES
     */
@@ -245,123 +241,6 @@ contract Y is IY {
         }
 
         emit ModuleRemoved(module);
-    }
-
-    /**
-     * AGGREGATORS
-    */
-
-    /**
-     * @notice Returns the latest content from a module for a specific Y
-     * @param module The address of the module to retrieve content from
-     * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content for a Y
-     */
-    function recentBytes(
-        address module,
-        uint256 earliest
-    ) public view returns (bytes[] memory) {
-        // Get all the timestamps for the Y for the passed module
-        uint256[] memory timestamps = getYeetstamps(module);
-        if (timestamps.length == 0) {
-            return new bytes[](0);
-        }
-
-        // filter out the timestamps that are earlier than the earliest
-        // this is done by creating a new array and pushing the timestamps
-        // that are later than the earliest
-        uint256[] memory _latestTimestamps = new uint256[](timestamps.length);
-        uint256 count = 0;
-        for (uint256 i = 0; i < timestamps.length; i++) {
-            if (timestamps[i] >= earliest) {
-                _latestTimestamps[count] = timestamps[i];
-                count++;
-            }
-        }
-
-        // The appropriate Yeets will be in the me hash table,
-        // accessible via the module and timestamp - they will
-        // be serialized structs and can be decoded via the module
-        bytes[] memory _yts = new bytes[](_latestTimestamps.length);
-        for (uint256 i = 0; i < _latestTimestamps.length; i++) {
-            _yts[i] = me[module][_latestTimestamps[i]];
-        }
-        return _yts;
-    }
-
-    /**
-     * @notice Returns the latest content from a module for a specific Y in JSON format
-     * @param module The address of the module to retrieve content from
-     * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content in JSON format
-     */
-    function recentJson(
-        address module,
-        uint256 earliest
-    ) public view returns (string memory) {
-        // Get the recent bytes
-        bytes[] memory recent = recentBytes(module, earliest);
-
-        // Use IYo to jsonify the bytes
-        return IYo(module).jsonifyAll(recent);
-    }
-
-    /**
-     * HTML GENERATORS
-    */
-
-    /**
-     * @notice Returns the latest content in html format from a module for a specific Y
-     * @param module The address of the module to retrieve content from
-     * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content in html format
-     */
-    function wall(
-        address module,
-        uint256 earliest
-    ) public view returns (string memory) {
-        // Get all the timestamps for the Y for the passed module
-        uint256[] memory timestamps = getYeetstamps(module);
-        if (timestamps.length == 0) {
-            return "";
-        }
-
-        // filter out the timestamps that are earlier than the earliest
-        // this is done by creating a new array and pushing the timestamps
-        // that are later than the earliest
-        uint256[] memory _latestTimestamps = new uint256[](timestamps.length);
-        uint256 count = 0;
-        for (uint256 i = 0; i < timestamps.length; i++) {
-            if (timestamps[i] >= earliest) {
-                _latestTimestamps[count] = timestamps[i];
-                count++;
-            }
-        }
-
-        // The appropriate Yeets will be in the me hash table,
-        // accessible via the module and timestamp - they will
-        // be serialized structs and can be decoded via the module
-        bytes[] memory _yts = new bytes[](_latestTimestamps.length);
-        for (uint256 i = 0; i < _latestTimestamps.length; i++) {
-            _yts[i] = me[module][_latestTimestamps[i]];
-        }
-        return IYo(module).feed(_yts);
-    }
-
-    /**
-     * @notice Returns the latest content from all modules for a specific Y
-     * @param earliest The earliest timestamp to retrieve content from
-     * @return The latest content from all modules in html format
-     */
-    function walls(uint256 earliest) public view returns (string memory) {
-        string memory html = "";
-        if (modules.length == 0) {
-            return "no modules";
-        }
-        for (uint256 i = 0; i < modules.length; i++) {
-            html = string(abi.encodePacked(html, wall(modules[i], earliest)));
-        }
-        return html;
     }
 
 

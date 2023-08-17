@@ -1,6 +1,11 @@
 import { ethers as hhethers } from "hardhat";
 
-import { Yeet, Yeet__factory, Yo, Yo__factory } from "../types";
+import YoArtifact from "../artifacts/contracts/stored/Yo.sol/Yo.json";
+import YeetArtifact from "../artifacts/contracts/utils/Yeet.sol/Yeet.json";
+import { Yo } from "../types/contracts/stored";
+import { Yeet } from "../types/contracts/utils";
+import { Yo__factory } from "../types/factories/contracts/stored";
+import { Yeet__factory } from "../types/factories/contracts/utils";
 
 const YEET_ADDRESS = process.env.YEET_ADDRESS_POLYGON;
 const YO_ADDRESS = process.env.YO_ADDRESS_POLYGON;
@@ -19,11 +24,11 @@ async function main() {
   }
 
   console.log("YEET_ADDRESS", YEET_ADDRESS);
-  const YeetFactory = (await hhethers.getContractFactory("Yeet")) as Yeet__factory;
+  const YeetFactory = new hhethers.ContractFactory(YeetArtifact.abi, YeetArtifact.bytecode) as Yeet__factory;
   yeetContract = YeetFactory.attach(YEET_ADDRESS) as Yeet;
 
   console.log("YO_ADDRESS", YO_ADDRESS);
-  const YoFactory = (await hhethers.getContractFactory("Yo")) as Yo__factory;
+  const YoFactory = new hhethers.ContractFactory(YoArtifact.abi, YoArtifact.bytecode) as Yo__factory;
   yoContract = YoFactory.attach(YO_ADDRESS) as Yo;
 
   // RUN FUNCTIONS

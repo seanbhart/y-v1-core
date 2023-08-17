@@ -3,8 +3,8 @@ pragma solidity >=0.8.4;
 
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { console } from "hardhat/console.sol";
-import { Yeet } from "./interfaces/IYo.sol";
-import { IYo } from "./interfaces/IYo.sol";
+import { Yeet } from "../interfaces/stored/IYo.sol";
+import { IYo } from "../interfaces/stored/IYo.sol";
 import { Y } from "./Y.sol";
 
 

@@ -2,7 +2,10 @@ import { expect } from "chai";
 import ethers from "ethers";
 import { ethers as hhethers } from "hardhat";
 
-import { Yeet, Yeet__factory, Yo, Yo__factory } from "../types";
+import { Yo } from "../../types/contracts/stored";
+import { Yeet } from "../../types/contracts/utils";
+import { Yo__factory } from "../../types/factories/contracts/stored";
+import { Yeet__factory } from "../../types/factories/contracts/utils";
 
 const devKey = process.env.ACCOUNT_KEY_PRIV_DEV04;
 

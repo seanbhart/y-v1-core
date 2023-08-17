@@ -1,6 +1,11 @@
 import { ethers as hhethers } from "hardhat";
 
-import { Y, Y__factory, Yo, Yo__factory } from "../types";
+import YArtifact from "../artifacts/contracts/stored/Y.sol/Y.json";
+import YoArtifact from "../artifacts/contracts/stored/Yo.sol/Yo.json";
+import { Yo } from "../types/contracts/stored";
+import { Y } from "../types/contracts/stored";
+import { Yo__factory } from "../types/factories/contracts/stored";
+import { Y__factory } from "../types/factories/contracts/stored";
 
 const Y_ADDRESS = process.env.Y_ADDRESS_OPTIMISM;
 const YO_ADDRESS = process.env.YO_ADDRESS_OPTIMISM;
@@ -10,12 +15,13 @@ async function main() {
   if (!Y_ADDRESS || !YO_ADDRESS || !devKey) {
     return;
   }
-  console.log("Y_ADDRESS", Y_ADDRESS);
-  console.log("YO_ADDRESS", YO_ADDRESS);
 
-  const YFactory = (await hhethers.getContractFactory("Y")) as Y__factory;
-  const YoFactory = (await hhethers.getContractFactory("Yo")) as Yo__factory;
+  console.log("Y_ADDRESS", Y_ADDRESS);
+  const YFactory = new hhethers.ContractFactory(YArtifact.abi, YArtifact.bytecode) as Y__factory;
   const yContract = YFactory.attach(Y_ADDRESS) as Y;
+
+  console.log("YO_ADDRESS", YO_ADDRESS);
+  const YoFactory = new hhethers.ContractFactory(YoArtifact.abi, YoArtifact.bytecode) as Yo__factory;
   const yoContract = YoFactory.attach(YO_ADDRESS) as Yo;
 
   // Check the contract using a read function
@@ -31,7 +37,10 @@ async function main() {
 
   // Add a Module
   const tx = await yContract.removeModule("0xCC4411174928e021dD6306032FAd7B58b260ECf4");
-  await tx.wait();
+  const receipt = await tx.wait();
+  if (!receipt) {
+    throw new Error("No receipt");
+  }
 
   // // // Use the text "hello there" in the serialize function to create bytes
   // // // const text = "hello there";
