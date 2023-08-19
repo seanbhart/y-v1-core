@@ -4,11 +4,8 @@ import { ethers as hhethers } from "hardhat";
 
 import { Y } from "../../types/contracts/logged";
 import { Yo } from "../../types/contracts/logged";
-// import { Yeet } from "../../types/contracts/utils";
 import { Y__factory } from "../../types/factories/contracts/logged";
 import { Yo__factory } from "../../types/factories/contracts/logged";
-
-// import { Yeet__factory } from "../../types/factories/contracts/utils";
 
 const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
 
@@ -16,7 +13,6 @@ describe("Yo Contract", function () {
   const provider = hhethers.provider;
   let yContract: Y;
   let yoContract: Yo;
-  // let yeetContract: Yeet;
   let ownerAddr: string;
   let ownerSigner: ethers.Signer;
 
@@ -35,9 +31,6 @@ describe("Yo Contract", function () {
     console.log("Y contract target:", yContract.target);
     yoContract = await new Yo__factory(ownerSigner).deploy();
     console.log("Yo contract target:", yoContract.target);
-
-    // yeetContract = await new Yeet__factory(ownerSigner).deploy();
-    // console.log("Yeet contract target:", yeetContract.target);
   });
 
   describe("Yo", function () {
