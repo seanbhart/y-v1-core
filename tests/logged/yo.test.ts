@@ -7,7 +7,7 @@ import { Yo } from "../../types/contracts/logged";
 import { Y__factory } from "../../types/factories/contracts/logged";
 import { Yo__factory } from "../../types/factories/contracts/logged";
 
-const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
+const devKey = process.env.ACCOUNT_KEY_PRIV_DEV01;
 
 describe("Yo Contract", function () {
   const provider = hhethers.provider;

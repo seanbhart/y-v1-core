@@ -1,38 +1,22 @@
 import "@nomicfoundation/hardhat-toolbox";
-// import "@nomiclabs/hardhat-ethers";
 import { config as dotenvConfig } from "dotenv";
 import "hardhat-deploy";
 import "hardhat-gas-reporter";
 import type { HardhatUserConfig } from "hardhat/config";
 import { resolve } from "path";
 
-// import type { NetworkUserConfig } from "hardhat/types";
-// import "./tasks/accounts";
-// import "./tasks/yo";
-
 dotenvConfig({ path: resolve(__dirname, ".env") });
 const devMode = process.env.DEV_MODE || true;
 
-let key = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
-const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3 || "";
+let key = process.env.ACCOUNT_KEY_PRIV_DEV01 || "";
+const devKey = process.env.ACCOUNT_KEY_PRIV_DEV01 || "";
 const devKey1 = process.env.ACCOUNT_KEY_PRIV_DEV01 || "";
-const devKey2 = process.env.ACCOUNT_KEY_PRIV_ACCT2 || "";
+const devKey2 = process.env.ACCOUNT_KEY_PRIV_DEV01 || "";
 const devKey4 = process.env.ACCOUNT_KEY_PRIV_DEV04 || "";
 if (devMode) {
   console.log("devMode: ", devMode);
   key = devKey;
 }
-
-// // Ensure that we have all the environment variables we need.
-// const mnemonic: string | undefined = process.env.MNEMONIC;
-// if (!mnemonic) {
-//   throw new Error("Please set your MNEMONIC in a .env file");
-// }
-
-// const infuraApiKey: string | undefined = process.env.INFURA_API_KEY;
-// if (!infuraApiKey) {
-//   throw new Error("Please set your INFURA_API_KEY in a .env file");
-// }
 
 const chainIds = {
   "arbitrum-mainnet": 42161,
@@ -46,29 +30,6 @@ const chainIds = {
   "polygon-mumbai": 80001,
   sepolia: 11155111,
 };
-
-// function getChainConfig(chain: keyof typeof chainIds): NetworkUserConfig {
-//   let jsonRpcUrl: string;
-//   switch (chain) {
-//     case "avalanche":
-//       jsonRpcUrl = "https://api.avax.network/ext/bc/C/rpc";
-//       break;
-//     case "bsc":
-//       jsonRpcUrl = "https://bsc-dataseed1.binance.org";
-//       break;
-//     default:
-//       jsonRpcUrl = "https://" + chain + ".infura.io/v3/" + infuraApiKey;
-//   }
-//   return {
-//     accounts: {
-//       count: 10,
-//       // mnemonic,
-//       path: "m/44'/60'/0'/0",
-//     },
-//     chainId: chainIds[chain],
-//     url: jsonRpcUrl,
-//   };
-// }
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -88,9 +49,9 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    token: "MATIC",
+    token: "ETH",
     currency: "USD",
-    gasPrice: 50, // 1 Gwei is the lowest possible setting - L2s are lower in reality
+    gasPrice: 1, // 1 Gwei is the lowest possible setting - L2s are lower in reality
     coinmarketcap: `${process.env.COIN_MARKET_CAP}`,
     enabled: process.env.REPORT_GAS ? true : false,
     excludeContracts: [],
@@ -117,10 +78,6 @@ const config: HardhatUserConfig = {
         },
       ],
       chainId: chainIds.hardhat,
-      // forking: {
-      //   url: `${process.env.NETWORK_FORK}`, //https://hardhat.org/hardhat-network/guides/mainnet-forking.html
-      //   // blockNumber: 15406716,
-      // },
     },
     local: {
       url: `${process.env.NETWORK_LOCAL}`,

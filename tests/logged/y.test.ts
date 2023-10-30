@@ -7,8 +7,8 @@ import { Yo } from "../../types/contracts/logged";
 import { Y__factory } from "../../types/factories/contracts/logged";
 import { Yo__factory } from "../../types/factories/contracts/logged";
 
-const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
-const devKey2 = process.env.ACCOUNT_KEY_PRIV_ACCT2;
+const devKey = process.env.ACCOUNT_KEY_PRIV_DEV01;
+const devKey2 = process.env.ACCOUNT_KEY_PRIV_DEV04;
 
 describe("Y Contract", function () {
   const provider = hhethers.provider;

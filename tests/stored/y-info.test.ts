@@ -7,8 +7,8 @@ import { Mock } from "../../types/contracts/utils";
 import { Y__factory } from "../../types/factories/contracts/stored";
 import { Mock__factory } from "../../types/factories/contracts/utils";
 
-const devKey = process.env.ACCOUNT_KEY_PRIV_ACCT3;
-const devKey2 = process.env.ACCOUNT_KEY_PRIV_ACCT2;
+const devKey = process.env.ACCOUNT_KEY_PRIV_DEV01;
+const devKey2 = process.env.ACCOUNT_KEY_PRIV_DEV04;
 
 describe("Y Contract - Info", function () {
   const provider = hhethers.provider;
